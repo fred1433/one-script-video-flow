@@ -61,6 +61,8 @@ def up(offline):
     if offline:
         # macOS sandbox: the render service may talk to loopback only
         cmd = ["sandbox-exec", "-f", str(ROOT / "tests/no-network.sb")] + cmd
+    if os.environ.get("FLOW_GENTLE") == "1":
+        cmd = ["taskpolicy", "-b"] + cmd  # shared machine: background priority
     p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, env=env, cwd=ROOT, start_new_session=True)
     (out / "render_service.pid").write_text(str(p.pid))
     wait_for(RENDER + "/health", 60)
@@ -93,11 +95,13 @@ def status():
 
 
 def pending():
+    """The gate waiting now, by ledger order (two events can share the same second)."""
     led = ledger()
-    for e in reversed(led):
+    for i in range(len(led) - 1, -1, -1):
+        e = led[i]
         if e["event"] == "awaiting":
-            decided = [d for d in led if d.get("gate") == e["gate"] and d["event"] in ("approved", "rejected", "changes")
-                       and d["ts"] >= e["ts"] and d is not e]
+            decided = any(d.get("gate") == e["gate"] and d["event"] in ("approved", "rejected", "changes")
+                          for d in led[i + 1:])
             return None if decided else e["gate"]
         if e["event"] == "delivered" and e.get("stage") == "package":
             return "done"

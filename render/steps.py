@@ -24,6 +24,13 @@ OUT = Path(os.environ.get("FLOW_OUT", ROOT / "out"))
 CACHE = Path(os.environ.get("FLOW_CACHE", ROOT / "cache"))
 BLENDER = os.environ.get("BLENDER", "/Applications/Blender.app/Contents/MacOS/Blender")
 FFMPEG = os.environ.get("FFMPEG", shutil.which("ffmpeg") or "ffmpeg")
+# FLOW_GENTLE=1: ffmpeg in the background QoS class on two threads, Blender refused (shared machine)
+GENTLE = os.environ.get("FLOW_GENTLE") == "1"
+
+
+def ff(*args):
+    pre = (["taskpolicy", "-b"] if GENTLE and shutil.which("taskpolicy") else []) + [FFMPEG]
+    return pre + (["-threads", "2"] if GENTLE else []) + list(args)
 SR = 24000
 
 
@@ -203,6 +210,8 @@ def build_timeline(run, sb, vo):
 
 
 def blender_job(job, log_path):
+    if os.environ.get("FLOW_NO_BLENDER") == "1":
+        raise RuntimeError("FLOW_NO_BLENDER=1: this step would start a Blender render")
     job_path = Path(log_path).with_suffix(".job.json")
     job_path.write_text(json.dumps(job))
     with open(log_path, "w") as lg:
@@ -387,6 +396,7 @@ class Overlay:
         self.P = self.K["palette"]
         self.W, self.H = (1920, 1080) if fmt == "wide" else (1080, 1920)
         self.cache = {}
+        self.cues = [c["t"] for c in word_cues(sb, vo) if c.get("pulse")]
 
     def text_img(self, text, size, weight, color, key=None):
         k = (text, size, weight, color)
@@ -494,6 +504,9 @@ class Overlay:
             dx, dy = c[self.fmt]
             grow = min(1.0, (t - scene["start"] - c["in"]) / 0.45)
             ex, ey = ax + dx * grow, ay + dy * grow
+            m = 24  # the label pill (54 px tall, centred on ey) never closer than 24 px to an edge
+            ey = min(max(ey, m + 26), self.H - m - 28)
+            ex = min(max(ex, m), self.W - m)
             layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
             d = ImageDraw.Draw(layer)
             ink = hexc(self.P["ink"], int(255 * a))
@@ -506,6 +519,7 @@ class Overlay:
                 tw = f.getlength(c["label"])
                 pad = 16
                 bx = ex - tw - 2 * pad if dx < 0 else ex
+                bx = min(max(bx, 24), self.W - 24 - tw - 2 * pad)
                 by = ey - 26
                 d.rounded_rectangle([bx, by, bx + tw + 2 * pad, by + 54], 27, fill=(255, 255, 255, int(245 * a)),
                                     outline=hexc(self.P["ink"], int(255 * a)), width=2)
@@ -554,8 +568,10 @@ class Overlay:
 
     def pulse(self, base, scene, t, anchors_row):
         ev = scene.get("events", {})
-        if "click" in ev and anchors_row:
-            lt = t - scene["start"] - ev["click"]
+        rings = ([scene["start"] + ev["click"]] if "click" in ev else []) + \
+            [c for c in self.cues if scene["start"] <= c < scene["start"] + scene["duration"] + scene["hold"]]
+        for at in (rings if anchors_row else []):
+            lt = t - at
             if 0 <= lt <= 0.7:
                 ax, ay = anchors_row["lug"][0] * self.W, anchors_row["lug"][1] * self.H
                 layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
@@ -604,9 +620,9 @@ def load_anchors(d):
 
 
 def encode(frames_iter, n, size, out_path, fps):
-    p = subprocess.Popen([FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s",
+    p = subprocess.Popen(ff("-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s",
                           f"{size[0]}x{size[1]}", "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", "slow",
-                          "-crf", "19", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out_path)],
+                          "-crf", "19", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out_path)),
                          stdin=subprocess.PIPE)
     for im in frames_iter:
         p.stdin.write(im.convert("RGB").tobytes())
@@ -705,6 +721,26 @@ def synth_swish(dur=1.1, sr=SR):
     return y / np.abs(y).max()
 
 
+SOUND_PLAN = ROOT / "script" / "sound_DEMO-001.json"
+
+
+def sound_plan():
+    return json.loads(SOUND_PLAN.read_text()) if SOUND_PLAN.exists() else {"after_word": []}
+
+
+def word_cues(sb, vo):
+    """Absolute times of the sound plan's cues: just after a given word of a given line."""
+    cues = []
+    for c in sound_plan().get("after_word", []):
+        line, pl = vo["lines"].get(c["line"]), sb["lines"].get(c["line"])
+        if not line or not pl:
+            continue
+        hits = [w for w in line["words"] if re.sub(r"\W", "", w["w"]).lower() == c["word"]]
+        if hits:
+            cues.append({**c, "t": round(pl["start"] + hits[-1]["e"] + c["delay"], 3)})
+    return cues
+
+
 def mix_audio(run, sb, vo, t0, t1, out_wav, extra_tail=0.0):
     n = int((t1 - t0 + extra_tail) * SR) + SR // 10
     bus = np.zeros(n, np.float32)
@@ -729,18 +765,21 @@ def mix_audio(run, sb, vo, t0, t1, out_wav, extra_tail=0.0):
             if not (t0 <= at <= t1):
                 continue
             if ev == "click":
-                place(click, at, 0.32)
+                place(click, at, sound_plan().get("lock_click_gain", 0.32))
             if ev == "swish":
                 place(swish, at, 0.10)
+    for c in word_cues(sb, vo):
+        if t0 <= c["t"] <= t1:
+            place(click, c["t"], c["gain"])
     fade = int(0.25 * SR)
     bus[-fade:] *= np.linspace(1, 0, fade)
     write_wav(out_wav, bus)
 
 
 def mux(video, wav, out):
-    subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", str(video), "-i", str(wav), "-map", "0:v", "-map", "1:a",
-                    "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "160k", "-ar", "48000",
-                    "-shortest", "-movflags", "+faststart", str(out)], check=True)
+    subprocess.run(ff("-y", "-loglevel", "error", "-i", str(video), "-i", str(wav), "-map", "0:v", "-map", "1:a",
+                      "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "160k", "-ar", "48000",
+                      "-shortest", "-movflags", "+faststart", str(out)), check=True)
 
 
 def srt(sb, vo, t0, t1, out):
@@ -766,7 +805,7 @@ def _sb_vo(run):
 def step_master(run, quality="final"):
     sb, vo = _sb_vo(run)
     key = h(sb, {k: [v["version"], v["text"]] for k, v in vo["lines"].items()}, [j["key"] for j in scene_jobs(sb)],
-            quality, file_hash(__file__))
+            quality, file_hash(__file__), sound_plan())
     ver, new = run.version_for("master", key)
     out = run.dir / run.name("master", ver, "mp4")
     if new or not out.exists():
@@ -798,7 +837,7 @@ def step_shorts(run, only=None, overrides=None, quality="final"):
         opts.update(overrides.get(str(idx), {}))
         jkey = [j["key"] for j in scene_jobs(sb) if j["scene"] == s["id"] and j["cam"] == "tall"]
         lines = {k: [v["version"], v["text"]] for k, v in vo["lines"].items() if sb["lines"][k]["scene"] == s["id"]}
-        key = h(opts, lines, jkey, quality, file_hash(__file__), s)
+        key = h(opts, lines, jkey, quality, file_hash(__file__), s, sound_plan())
         asset = kit()["naming"]["short_asset"].format(index=idx)
         ver, new = run.version_for(asset, key)
         out = run.dir / run.name(asset, ver, "mp4")
@@ -841,6 +880,8 @@ def step_package(run, approvals):
         "chapters": chapters,
         "files": {k: {"file": v["file"], "version": v["version"], "sha1": v["sha1"]} for k, v in A.items()
                   if k in ["master", "lookframes", "storyboard"] + shorts},
+        "captions": {k: A[k]["file"].replace(".mp4", ".srt") for k in ["master"] + shorts
+                     if (run.dir / A[k]["file"].replace(".mp4", ".srt")).exists()},
         "thumbnail": thumb.name, "approvals": approvals,
         "kit": {"id": kit()["kit_id"], "version": kit()["version"]},
         "model_api_spend_usd": 0,

@@ -1,0 +1,7 @@
+{
+  "note": "Sound plan, mixed after the voice. The lock click under 'a spring lifts it into a notch' is masked by the voice, so the same click is played again, clear, in the silence after the word 'click'; the pulse ring on the lug repeats with it.",
+  "lock_click_gain": 0.45,
+  "after_word": [
+    {"line": "L08", "word": "click", "delay": 0.25, "sound": "click", "gain": 0.75, "pulse": true}
+  ]
+}

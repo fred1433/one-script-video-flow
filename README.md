@@ -8,7 +8,7 @@ Page with the film, the Shorts and the hand-offs: https://theaipipe.com/demos/on
 
 ## Run it
 
-Needs: macOS or Linux, Python 3.12, Blender 5.2, ffmpeg, docker with compose. With Colima on a Mac, keep the clone under your home folder: Colima only shares that folder with containers, and n8n reads the workflow from `n8n/`.
+Needs: macOS or Linux, Python 3.12, Blender 5.2, ffmpeg, docker with compose. The first run downloads the Kokoro voice model (about 330 MB) from Hugging Face; later runs, and `--offline`, use the local copy. Blender is looked for at `/Applications/Blender.app`; elsewhere set `BLENDER=/path/to/blender`. `--offline` uses the macOS sandbox (`sandbox-exec`); on Linux leave it out and block outbound traffic with your firewall. With Colima on a Mac, keep the clone under your home folder: Colima only shares that folder with containers, and n8n reads the workflow from `n8n/`.
 
 ```
 python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
@@ -22,7 +22,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./flow.py review-shorts --approve 1,3 --reject 2 --note "The caption covers the lug" --fix caption_pos=lower
 ```
 
-The first run renders every scene in Blender (about an hour and a half on an M1 Max). After that, a run that changes only a script line, a caption or a label reuses every scene render; a change to the shot plan or the kit renders the scenes again.
+The first run renders every scene in Blender (about three hours on an M1 Max: 10,894 s in the recorded run). After that, a run that changes only a script line, a caption or a label reuses every scene render; a change to the shot plan or the kit renders the scenes again.
 
 ## What is where
 

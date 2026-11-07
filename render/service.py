@@ -28,6 +28,7 @@ ROLES = {
     "package": "Producer",
 }
 LOCK = threading.Lock()
+DECISIONS = ("approved", "rejected", "changes")
 
 
 def post_json(url, body):
@@ -57,16 +58,21 @@ def run_step(name, p):
             fixes = json.loads(fixes_path.read_text()) if fixes_path.exists() else {}
             only = p.get("only")
             if p.get("rework"):
-                review = [e for e in run.ledger() if e.get("gate") == "shorts" and e["event"] == "changes"][-1]
+                led = run.ledger()
+                review = [e for e in led if e.get("gate") == "shorts" and e["event"] == "changes"
+                          and e.get("execution") == p.get("execution")]
+                if not review:
+                    raise ValueError("no refused Short in this execution: refuse with ./flow.py review-shorts")
                 only = []
-                for idx, verdict in (review.get("shorts") or {}).items():
+                for idx, verdict in (review[-1].get("shorts") or {}).items():
                     if isinstance(verdict, dict):
                         only.append(int(idx))
                         fixes.setdefault(idx, {}).update(verdict.get("fix") or {})
                 fixes_path.write_text(json.dumps(fixes, indent=2))
             res = steps.step_shorts(run, only, fixes, q)
         elif name == "package":
-            approvals = [e for e in run.ledger() if e.get("event") in ("approved", "rejected")]
+            # this execution only, refusals included
+            approvals = [e for e in run.ledger() if e.get("event") in DECISIONS and e.get("execution") == p.get("execution")]
             res = steps.step_package(run, approvals)
         else:
             raise ValueError(f"unknown step {name}")
@@ -138,14 +144,30 @@ class H(BaseHTTPRequestHandler):
                 return self._send(200, ev)
             if u.path == "/decide":
                 run = steps.Run(p["project"])
-                waiting = [e for e in run.ledger() if e["event"] == "awaiting" and e["gate"] == p["gate"]]
+                led = run.ledger()
+                # ledger order, not timestamps: two events can share the same second
+                waiting = [i for i, e in enumerate(led) if e["event"] == "awaiting" and e["gate"] == p["gate"]]
                 if not waiting:
                     return self._send(409, {"error": f"nothing is waiting at gate {p['gate']}"})
-                last = waiting[-1]
-                done = [e for e in run.ledger() if e["event"] in ("approved", "rejected", "changes")
-                        and e.get("gate") == p["gate"] and e["ts"] >= last["ts"]]
+                i_last = waiting[-1]
+                last = led[i_last]
+                done = [e for e in led[i_last + 1:] if e["event"] in DECISIONS and e.get("gate") == p["gate"]]
                 if done:
                     return self._send(409, {"error": f"gate {p['gate']} was already decided at {done[-1]['ts']}"})
+                if p["gate"] == "shorts" and p["decision"] == "rejected":
+                    return self._send(400, {"error": "refuse Shorts one by one, each with its fix: "
+                                                     "./flow.py review-shorts --reject 2 --note ... --fix caption_pos=lower"})
+                if p["gate"] == "shorts" and p["decision"] == "changes":
+                    fixes_path = run.dir / "shorts_fixes.json"
+                    known = json.loads(fixes_path.read_text()) if fixes_path.exists() else {}
+                    refused = {k: v for k, v in (p.get("shorts") or {}).items() if isinstance(v, dict)}
+                    if not refused:
+                        return self._send(400, {"error": "a refusal names at least one Short"})
+                    for k, v in refused.items():
+                        fix = v.get("fix") or {}
+                        if not fix or all(known.get(k, {}).get(a) == b for a, b in fix.items()):
+                            return self._send(400, {"error": f"Short {k}: the refusal needs a fix that changes the cut "
+                                                             "(for example --fix caption_pos=lower); without one the same file would come back"})
                 ev = run.log({"event": p["decision"], "gate": p["gate"], "stage": p["gate"],
                               "role_planned": last["role_planned"], "actor": p.get("by", "builder (for this demo)"),
                               "note": p.get("note"), "shorts": p.get("shorts"), "files": last["files"],
@@ -154,6 +176,8 @@ class H(BaseHTTPRequestHandler):
                                                "shorts": p.get("shorts"), "ts": ev["ts"]})
                 return self._send(200, ev)
             self._send(404, {"error": "not found"})
+        except ValueError as e:
+            self._send(400, {"error": str(e)})
         except Exception as e:
             traceback.print_exc()
             self._send(500, {"error": str(e)})
