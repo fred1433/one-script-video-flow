@@ -84,9 +84,9 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--blue); outline-
 section.track { margin: 110px 0 0; }
 h2 { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 10px; font-weight: 800; }
 .intro { max-width: 64ch; color: var(--ink-2); margin: 0 0 30px; }
-.stations { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(150px, 1fr)); gap: 0; position: relative; }
+.stations { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 0; position: relative; }
 .stations::before { content: ""; position: absolute; left: 0; right: 0; top: 47px; height: 2px; background: var(--ink); }
-.st { position: relative; padding: 0 14px 0 0; }
+.st { position: relative; padding: 0 12px 0 0; min-width: 0; overflow-wrap: anywhere; }
 .st .t { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; height: 34px; }
 .st .mark { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); margin: 6px 0 14px; position: relative; z-index: 1; border: 3px solid var(--studio); box-sizing: content-box; }
 .st.gate .mark { background: var(--studio); border: 3px solid var(--ink); width: 14px; height: 14px; }
@@ -180,9 +180,9 @@ footer .book { font-weight: 800; }
       <tbody>
         <tr><td>Producer</td><td data-k="Receives">The client brief</td><td data-k="Hands back">The approved script, one line per sentence. Approving it starts the workflow.</td><td data-k="After a refusal">Edit the line and approve again. Only that line is voiced again; no scene renders again.</td></tr>
         <tr><td>Voice-over</td><td data-k="Receives">The approved script</td><td data-k="Hands back"><code>DEMO-001_vo_L07_v01.wav</code>, one file per line, with word timings for the captions</td><td data-k="After a refusal">Redo the one line: same name, next version.</td></tr>
-        <tr><td>Storyboard &amp; Camera Director</td><td data-k="Receives">Script and voice timings</td><td data-k="Hands back"><code>DEMO-001_storyboard_v01</code>: the shot plan with a 16:9 and a 9:16 camera for each scene, and a contact sheet</td><td data-k="After a refusal">Edit the shot plan. Scenes whose plan did not change keep their renders.</td></tr>
+        <tr><td>Storyboard &amp; Camera Director</td><td data-k="Receives">Script and voice timings</td><td data-k="Hands back"><code>DEMO-001_storyboard_v01</code>: the shot plan with a 16:9 and a 9:16 camera for each scene, and a contact sheet</td><td data-k="After a refusal">Edit the shot plan and start again. A new plan renders the scenes again.</td></tr>
         <tr><td>AI Image Artist</td><td data-k="Receives">Storyboard and kit</td><td data-k="Hands back"><code>DEMO-001_lookframes_v01.png</code>: two finished frames that fix materials, light and palette</td><td data-k="After a refusal">Change the kit and raise its version.</td></tr>
-        <tr><td>AI Video Animator</td><td data-k="Receives">Approved look</td><td data-k="Hands back">Scene renders, then <code>DEMO-001_master_v01.mp4</code> and its captions</td><td data-k="After a refusal">Only the scenes whose inputs changed render again.</td></tr>
+        <tr><td>AI Video Animator</td><td data-k="Receives">Approved look</td><td data-k="Hands back">Scene renders, then <code>DEMO-001_master_v01.mp4</code> and its captions</td><td data-k="After a refusal">Fix the plan or the kit and start again. A fix that only touches voice, captions or labels renders nothing again.</td></tr>
         <tr><td>Storyboard &amp; Camera Director, vertical review</td><td data-k="Receives">Approved master</td><td data-k="Hands back">Three Shorts at 1080x1920, cut from the vertical camera, not cropped from the master</td><td data-k="After a refusal">One decision per Short. A refused Short goes back with its fix; the package waits; only that Short is cut again.</td></tr>
       </tbody>
     </table>
@@ -202,7 +202,7 @@ footer .book { font-weight: 800; }
         <dt>Edit</dt><dd>ffmpeg, loudness set to -16 LUFS.</dd>
         <dt>Paid tools</dt><dd>None connected. The runbook names the one function each would replace: the voice line, the look frames, the scene clip.</dd>
       </dl>
-      <p class="repo"><a href="https://github.com/fred1433/one-script-video-flow">The repository</a> replays the run from the same script with one command.</p>
+      <p class="repo"><a href="https://github.com/fred1433/one-script-video-flow">The repository</a> replays the run from the same script: <span class="code-inline">./flow.py up</span>, then <span class="code-inline">./flow.py run</span>.</p>
     </div>
     <figure class="proof" style="margin:0">
       <img src="media/n8n_execution.png" alt="The n8n editor showing the finished execution of the workflow, from the script webhook to the package step" loading="lazy">

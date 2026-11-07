@@ -1,6 +1,6 @@
 # One script, one film, three Shorts
 
-An n8n workflow that takes one approved script and returns a finished explainer (16:9) and three vertical Shorts (9:16), with every hand-off between roles waiting for a real sign-off and written to a ledger.
+An n8n workflow: one approved script goes in; a finished explainer (16:9) and three vertical Shorts (9:16) come out. Every hand-off between roles waits for a real sign-off and is written to a ledger.
 
 The sample is a 72-second explainer of a fictional cartridge lock. The device was invented for this demo; it is not a real product and the film makes no clinical claim. Every export carries the line "Independent demo · fictional device".
 
@@ -22,7 +22,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./flow.py review-shorts --approve 1,3 --reject 2 --note "The caption covers the lug" --fix caption_pos=lower
 ```
 
-The first run renders every scene in Blender (about an hour and a half on an M1 Max). After that a run only redoes what changed.
+The first run renders every scene in Blender (about an hour and a half on an M1 Max). After that, a run that changes only a script line, a caption or a label reuses every scene render; a change to the shot plan or the kit renders the scenes again.
 
 ## What is where
 
