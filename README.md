@@ -8,7 +8,7 @@ Page with the film, the Shorts and the hand-offs: https://theaipipe.com/demos/on
 
 ## Run it
 
-Needs: macOS or Linux, Python 3.12, Blender 5.2, ffmpeg, docker with compose.
+Needs: macOS or Linux, Python 3.12, Blender 5.2, ffmpeg, docker with compose. With Colima on a Mac, keep the clone under your home folder: Colima only shares that folder with containers, and n8n reads the workflow from `n8n/`.
 
 ```
 python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
