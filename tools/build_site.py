@@ -47,7 +47,7 @@ def copy(name):
 
 
 def poster(video, t, out):
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", str(t), "-i", str(RUN / video), "-frames:v", "1",
+    subprocess.run(["taskpolicy", "-b", "ffmpeg", "-threads", "2", "-y", "-loglevel", "error", "-ss", str(t), "-i", str(RUN / video), "-frames:v", "1",
                     "-q:v", "3", str(MEDIA / out)], check=True)
     return f"media/{out}"
 
