@@ -1,0 +1,6 @@
+(version 1)
+(allow default)
+; recipe (a): the render service may not reach the internet, only this machine
+(deny network-outbound)
+(allow network-outbound (remote ip "localhost:*"))
+(allow network-outbound (remote unix-socket))

@@ -1,0 +1,7 @@
+.venv/
+out/
+cache/
+__pycache__/
+*.pyc
+.DS_Store
+n8n_data/

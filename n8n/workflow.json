@@ -1,0 +1,784 @@
+{
+  "id": "OneScriptFlow001",
+  "name": "One approved script to a master and three Shorts",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "one-script-flow",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "84f0ae5a-d648-55a0-9b85-0ff7dd320d9b",
+      "name": "Script approved",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "5c1d1a4e-3f7b-4c55-9d0e-0a1b2c3d4e01"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/run/start",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, script: $('Script approved').item.json.body.script, approved_by: $('Script approved').item.json.body.approved_by, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "a36ee8e9-410e-5746-9de3-939cb668b604",
+      "name": "Register the run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/voice",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id, script: $('Script approved').item.json.body.script }) }}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "id": "40a4a7a9-6cf0-5976-94cc-82f128c66415",
+      "name": "Voice-over (local)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/storyboard",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id, storyboard: $('Script approved').item.json.body.storyboard }) }}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "id": "7cbb3df3-d6bc-5eb9-9faa-cb89cb347717",
+      "name": "Storyboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/handoff",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, gate: 'storyboard', files: $json.files, resume_url: $execution.resumeUrl, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "271c03c2-ab37-58b9-831d-56f43e000a6d",
+      "name": "Hand off to Storyboard & Camera Director",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "id": "56b9a774-6f35-521a-9954-723fbd670da0",
+      "name": "Wait for storyboard sign-off",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        300
+      ],
+      "webhookId": "6ceb2371-a65e-5a4a-b5d3-fa78492fb484"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "b9912d82-f8d2-57fa-a491-6ef68d06f1cf",
+              "leftValue": "={{ $json.body.decision }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "45c5d844-a70e-5373-8597-eb163c0e853b",
+      "name": "Storyboard approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/look",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "id": "01dab8fe-6777-5c38-8a2a-6eb9a03efc46",
+      "name": "Look frames",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/handoff",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, gate: 'look', files: $json.files, resume_url: $execution.resumeUrl, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "43846908-006a-5d6a-b589-a69477252b58",
+      "name": "Hand off to AI Image Artist",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "id": "dc6d97c4-782b-5cc6-95c2-59f407a77c96",
+      "name": "Wait for look sign-off",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2160,
+        220
+      ],
+      "webhookId": "f5c12f4a-4549-5532-92a6-d16a76722ec5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "3005ad17-7bef-583b-84d3-915851657a02",
+              "leftValue": "={{ $json.body.decision }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "27983a3b-e37b-5679-afbc-cc71ce18409a",
+      "name": "Look approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/animate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id, callback: $execution.resumeUrl }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "c2b20a5b-2dc6-53d5-b702-88c8fdc3f550",
+      "name": "Animate scenes (Blender)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2640,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "id": "3eb5b8d3-5c81-5ab2-a042-2a05b29e924c",
+      "name": "Wait for the render",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2880,
+        140
+      ],
+      "webhookId": "a874a305-99e4-59e6-a4fc-fbb9dca10335"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/master",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 3600000
+        }
+      },
+      "id": "727973f7-f84e-58b8-b6a4-5d83d22344ba",
+      "name": "Edit the master",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/handoff",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, gate: 'master', files: $json.files, resume_url: $execution.resumeUrl, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "2e4dcaa8-783c-5402-b265-145545177bd1",
+      "name": "Hand off to AI Video Animator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3360,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "id": "60387e2a-62b4-5b65-b2bb-3bd9c2f65889",
+      "name": "Wait for master sign-off",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3600,
+        140
+      ],
+      "webhookId": "4ff5d40f-69b7-5141-b5da-e5eb118d8f5a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1c1857f5-4aa9-5dce-9c3c-1fed8c8f50d8",
+              "leftValue": "={{ $json.body.decision }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b0a1c407-69d9-5d7a-b3ed-2bdbbee53ef1",
+      "name": "Master approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3840,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/shorts",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 3600000
+        }
+      },
+      "id": "4e30cb7c-2119-57b5-bfba-d8ddbd65dcc8",
+      "name": "Cut the three Shorts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4080,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/handoff",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, gate: 'shorts', files: $json.files, resume_url: $execution.resumeUrl, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "01c164f2-aa3d-5e09-ac80-5ff57d1a009d",
+      "name": "Hand off Shorts for review",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4320,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "id": "8a92c8e2-b6d4-5c41-81eb-9bdd2905f465",
+      "name": "Wait for Shorts review",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4560,
+        60
+      ],
+      "webhookId": "76bd8020-eb3f-5e86-a4db-1d91137cfac8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "3eb183bd-9163-5c1b-947f-a4167a5e3c2d",
+              "leftValue": "={{ $json.body.decision }}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "50b3fbfe-e51d-57d0-90a8-75b5000774d4",
+      "name": "All Shorts approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4800,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/shorts",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id, rework: true }) }}",
+        "options": {
+          "timeout": 3600000
+        }
+      },
+      "id": "d2dac049-c189-58b6-9382-ade8caa5e29e",
+      "name": "Rework the refused Shorts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://relay:8790/step/package",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ project: $('Script approved').item.json.body.project, quality: $('Script approved').item.json.body.quality, execution: $execution.id }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "8299ca9d-2c01-5841-9aca-a5abea62d137",
+      "name": "Package for upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5040,
+        -20
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1fd261d7-d88a-55b1-8310-4b86d1b0b501",
+      "name": "Sent back",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        480
+      ]
+    }
+  ],
+  "connections": {
+    "Script approved": {
+      "main": [
+        [
+          {
+            "node": "Register the run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Register the run": {
+      "main": [
+        [
+          {
+            "node": "Voice-over (local)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice-over (local)": {
+      "main": [
+        [
+          {
+            "node": "Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Storyboard": {
+      "main": [
+        [
+          {
+            "node": "Hand off to Storyboard & Camera Director",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hand off to Storyboard & Camera Director": {
+      "main": [
+        [
+          {
+            "node": "Wait for storyboard sign-off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for storyboard sign-off": {
+      "main": [
+        [
+          {
+            "node": "Storyboard approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Storyboard approved?": {
+      "main": [
+        [
+          {
+            "node": "Look frames",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sent back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look frames": {
+      "main": [
+        [
+          {
+            "node": "Hand off to AI Image Artist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hand off to AI Image Artist": {
+      "main": [
+        [
+          {
+            "node": "Wait for look sign-off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for look sign-off": {
+      "main": [
+        [
+          {
+            "node": "Look approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look approved?": {
+      "main": [
+        [
+          {
+            "node": "Animate scenes (Blender)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sent back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Animate scenes (Blender)": {
+      "main": [
+        [
+          {
+            "node": "Wait for the render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for the render": {
+      "main": [
+        [
+          {
+            "node": "Edit the master",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit the master": {
+      "main": [
+        [
+          {
+            "node": "Hand off to AI Video Animator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hand off to AI Video Animator": {
+      "main": [
+        [
+          {
+            "node": "Wait for master sign-off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for master sign-off": {
+      "main": [
+        [
+          {
+            "node": "Master approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master approved?": {
+      "main": [
+        [
+          {
+            "node": "Cut the three Shorts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sent back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cut the three Shorts": {
+      "main": [
+        [
+          {
+            "node": "Hand off Shorts for review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hand off Shorts for review": {
+      "main": [
+        [
+          {
+            "node": "Wait for Shorts review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Shorts review": {
+      "main": [
+        [
+          {
+            "node": "All Shorts approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Shorts approved?": {
+      "main": [
+        [
+          {
+            "node": "Package for upload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rework the refused Shorts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rework the refused Shorts": {
+      "main": [
+        [
+          {
+            "node": "Hand off Shorts for review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "timezone": "Europe/London"
+  },
+  "pinData": {},
+  "versionId": "365c23ce-6869-5686-871c-519cf1fe8c87"
+}

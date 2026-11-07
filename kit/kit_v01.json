@@ -1,0 +1,77 @@
+{
+  "kit_id": "demo-kit",
+  "version": "v01",
+  "note": "Independent demo kit. Palette and typeface are inspired by a public website; this is not an approved client brand kit.",
+  "naming": {
+    "project": "DEMO-001",
+    "pattern": "{project}_{asset}_v{version:02d}.{ext}",
+    "short_asset": "S{index:02d}_vertical"
+  },
+  "type": {
+    "family": "Manrope",
+    "file": "kit/fonts/Manrope-VF.ttf",
+    "licence": "SIL Open Font License 1.1 (kit/fonts/OFL.txt)"
+  },
+  "palette": {
+    "ink": "#1B3746",
+    "blue": "#006495",
+    "turquoise": "#0ED4D7",
+    "amber": "#FBBD58",
+    "paper": "#F4F5F4",
+    "white": "#FFFFFF"
+  },
+  "voice": {
+    "engine": "kokoro",
+    "model": "hexgrad/Kokoro-82M",
+    "voice": "bf_emma",
+    "lang": "b",
+    "speed": 0.94
+  },
+  "disclaimer": "Independent demo \u00b7 fictional device",
+  "materials": {
+    "clay": "#ECEBE8",
+    "cartridge": "#E3EAEE",
+    "lug": "#0ED4D7",
+    "stop": "#FBBD58",
+    "section": "#3B5A6B",
+    "spring": "#B4BEC4",
+    "floor": "#EEEFF0"
+  },
+  "render": {
+    "world": "#EEF0F1",
+    "world_strength": 1.0,
+    "exposure": 0.15,
+    "fstop": 8.0,
+    "lights": {
+      "key": 3800,
+      "fill": 700,
+      "rim": 2000,
+      "top": 450,
+      "backdrop": 2600
+    },
+    "fps": 24,
+    "samples": 40
+  },
+  "geometry": {
+    "housing_r_out": 1.6,
+    "housing_r_in": 1.25,
+    "housing_h": 3.2,
+    "slot_w": 0.36,
+    "leg_z": 2.08,
+    "notch_z": 2.3,
+    "floor_t": 0.2,
+    "pedestal_r": 2.15,
+    "pedestal_h": 0.45,
+    "cart_r": 1.17,
+    "cart_bottom": -1.25,
+    "cart_top": 1.65,
+    "cap_r": 1.5,
+    "cap_h": 0.4,
+    "lug_r": 0.165,
+    "lug_len": 0.78,
+    "spring_r": 0.85,
+    "spring_wire": 0.07,
+    "spring_turns": 6,
+    "spring_free": 1.75
+  }
+}

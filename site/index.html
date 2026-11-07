@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DEMO-001 production sheet</title>
+<meta name="description" content="One approved script, one 72-second explainer and three vertical Shorts, with every hand-off signed off in an n8n workflow. Independent demo, fictional device.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --studio: #EEF0F1;      /* the render backdrop: the page sits in the same room as the film */
+  --sheet: #F7F8F8;
+  --ink: #1B3746;
+  --ink-2: #4A6270;
+  --ink-3: #7D8F99;
+  --blue: #006495;
+  --lug: #0ED4D7;         /* turquoise: the lug, and on this sheet, a gate passed */
+  --stop: #FBBD58;        /* amber: the stop, and on this sheet, a gate that stopped the job */
+  --stop-ink: #7A4E00;
+  --rule: #D3D9DC;
+  --white: #FFFFFF;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--studio); color: var(--ink);
+  font-family: Manrope, system-ui, sans-serif; font-size: 16px; line-height: 1.55;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+a { color: var(--blue); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 40px; }
+
+/* ---------- slate */
+.slate { padding: 40px 0 26px; display: grid; grid-template-columns: 1fr auto; gap: 8px 40px; align-items: end; }
+.slate .code { font-weight: 800; font-size: 15px; letter-spacing: .02em; color: var(--ink-2); margin: 0 0 6px; }
+.slate h1 { margin: 0; font-size: clamp(34px, 4.6vw, 60px); line-height: 1.02; letter-spacing: -0.025em; font-weight: 800; }
+.slate .lede { grid-column: 1 / -1; margin: 14px 0 0; max-width: 62ch; color: var(--ink-2); font-size: 18px; }
+.status { display: flex; gap: 10px; align-items: center; font-weight: 700; font-size: 15px; padding-bottom: 8px; white-space: nowrap; }
+.status i { width: 12px; height: 12px; border-radius: 50%; background: var(--lug); box-shadow: 0 0 0 4px rgba(14, 212, 215, .2); }
+
+/* ---------- film */
+.film { position: relative; }
+.film video { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--studio); border-radius: 4px; }
+.film-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 14px 0 0; font-size: 14px; color: var(--ink-2); }
+.film-meta b { color: var(--ink); font-weight: 700; }
+
+/* ---------- script, read under the film */
+.script { display: grid; grid-template-columns: 1fr 1.25fr 1.25fr 1.4fr .8fr; gap: 0 22px; margin: 34px 0 0; }
+.scene { border-top: 2px solid var(--rule); padding-top: 12px; transition: border-color .25s; }
+.scene.on { border-color: var(--ink); }
+.scene.source { border-color: var(--lug); }
+.scene h3 { margin: 0 0 8px; font-size: 14px; font-weight: 800; display: flex; justify-content: space-between; gap: 8px; }
+.scene h3 span { color: var(--ink-3); font-weight: 600; }
+.line { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 5px 0 5px 10px; margin: 0 0 2px -10px;
+  font: inherit; font-size: 14.5px; line-height: 1.45; color: var(--ink-2); cursor: pointer; border-left: 2px solid transparent; }
+.line:hover { color: var(--ink); }
+.line.on { color: var(--ink); border-left-color: var(--blue); }
+.scene.source .line { color: var(--ink); }
+.source-tag { display: none; font-size: 12.5px; font-weight: 700; color: var(--blue); margin: 6px 0 0; }
+.scene.source .source-tag { display: block; }
+
+/* ---------- shorts */
+.shorts { margin: 64px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.short video { display: block; width: 100%; aspect-ratio: 9 / 16; background: var(--studio); border-radius: 14px; }
+.short h3 { font-size: 21px; line-height: 1.2; margin: 16px 0 4px; font-weight: 800; letter-spacing: -0.01em; }
+.short .file { font-size: 13.5px; color: var(--ink-2); margin: 0; }
+.short .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0 0; }
+.btn { font: inherit; font-size: 14px; font-weight: 700; color: var(--white); background: var(--ink); border: 0; border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+.btn:hover { background: var(--blue); }
+.versions { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.versions button { font: inherit; font-size: 13px; font-weight: 700; border: 0; background: transparent; color: var(--ink); padding: 7px 12px; cursor: pointer; }
+.versions button[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+.refusal { margin: 12px 0 0; padding: 10px 12px; background: #FFF4DF; border-left: 3px solid var(--stop); font-size: 14px; color: var(--stop-ink); border-radius: 0 6px 6px 0; }
+.refusal b { color: #5C3A00; }
+
+/* ---------- hand-offs */
+section.track { margin: 110px 0 0; }
+h2 { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 10px; font-weight: 800; }
+.intro { max-width: 64ch; color: var(--ink-2); margin: 0 0 30px; }
+.stations { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(150px, 1fr)); gap: 0; position: relative; }
+.stations::before { content: ""; position: absolute; left: 0; right: 0; top: 47px; height: 2px; background: var(--ink); }
+.st { position: relative; padding: 0 14px 0 0; }
+.st .t { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; height: 34px; }
+.st .mark { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); margin: 6px 0 14px; position: relative; z-index: 1; border: 3px solid var(--studio); box-sizing: content-box; }
+.st.gate .mark { background: var(--studio); border: 3px solid var(--ink); width: 14px; height: 14px; }
+.st.gate.ok .mark { background: var(--lug); border-color: var(--ink); }
+.st.gate.no .mark { background: var(--stop); border-color: var(--ink); }
+.st h4 { margin: 0 0 4px; font-size: 15.5px; font-weight: 800; line-height: 1.25; }
+.st p { margin: 0 0 3px; font-size: 13.5px; color: var(--ink-2); line-height: 1.4; }
+.st .who { color: var(--ink); }
+.st .f { font-size: 12.5px; color: var(--ink-3); word-break: break-all; }
+.st.no h4 { color: var(--stop-ink); }
+
+/* ---------- runbook */
+section.runbook { margin: 100px 0 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th { text-align: left; font-size: 13px; color: var(--ink-3); font-weight: 700; padding: 0 16px 10px 0; border-bottom: 2px solid var(--ink); }
+td { vertical-align: top; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+td:first-child { color: var(--ink); font-weight: 800; width: 18%; }
+td code, .code-inline { font-family: inherit; font-weight: 700; color: var(--ink); font-size: 13.5px; }
+
+/* ---------- what ran */
+section.ran { margin: 100px 0 0; display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; }
+.ran dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 22px; font-size: 15px; }
+.ran dt { font-weight: 800; }
+.ran dd { margin: 0; color: var(--ink-2); }
+.proof img { display: block; width: 100%; border-radius: 8px; border: 1px solid var(--rule); background: var(--white); }
+.proof p { font-size: 13.5px; color: var(--ink-2); margin: 10px 0 0; }
+.repo { margin: 28px 0 0; font-size: 15.5px; }
+
+footer { margin: 110px 0 0; padding: 34px 0 54px; border-top: 2px solid var(--ink); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; font-size: 15px; }
+footer p { margin: 0; }
+footer .book { font-weight: 800; }
+
+@media (max-width: 1100px) {
+  .script { grid-template-columns: 1fr 1fr; gap: 22px; }
+  .stations { grid-template-columns: 1fr; }
+  .stations::before { left: 7px; right: auto; top: 8px; bottom: 8px; width: 2px; height: auto; }
+  .st { display: grid; grid-template-columns: 34px 1fr; column-gap: 12px; padding: 0 0 22px; }
+  .st .mark { grid-row: 1 / span 6; margin: 4px 0 0; }
+  .st .t { height: auto; font-size: 18px; }
+  section.ran { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  .slate { grid-template-columns: 1fr; padding-top: 26px; }
+  .status { padding: 0; }
+  .slate .lede { font-size: 16.5px; }
+  .script { grid-template-columns: 1fr; }
+  .shorts { grid-template-columns: 1fr; gap: 48px; }
+  .short { max-width: 340px; margin: 0 auto; width: 100%; }
+  section.track, section.runbook, section.ran { margin-top: 76px; }
+  table, thead, tbody, tr, td { display: block; }
+  thead { display: none; }
+  tr { border-bottom: 1px solid var(--rule); padding: 12px 0; }
+  td { border: 0; padding: 3px 0; width: auto !important; }
+  td[data-k]::before { content: attr(data-k) ": "; font-weight: 700; color: var(--ink); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="slate">
+    <div>
+      <p class="code" id="code">DEMO-001</p>
+      <h1>How a cartridge lock holds</h1>
+    </div>
+    <div class="status" id="status"><i aria-hidden="true"></i><span>Ready to upload</span></div>
+    <p class="lede">One approved script went into an n8n workflow and came out as this explainer and three vertical Shorts. Each hand-off waited for a sign-off before the next person could start. The device is fictional, invented for this demo.</p>
+  </header>
+
+  <div class="film">
+    <video id="master" controls playsinline preload="metadata"></video>
+    <div class="film-meta" id="filmMeta"></div>
+  </div>
+
+  <div class="script" id="script" aria-label="The approved script, line by line"></div>
+
+  <div class="shorts" id="shorts"></div>
+
+  <section class="track" aria-labelledby="h-track">
+    <h2 id="h-track">Hand-offs, as they happened</h2>
+    <p class="intro">Each ring is a waiting point in the workflow: the job stops there until someone answers. The role is the one the step is planned for. In this run every gate was answered by the builder, and the sheet says so.</p>
+    <ol class="stations" id="stations"></ol>
+  </section>
+
+  <section class="runbook" aria-labelledby="h-run">
+    <h2 id="h-run">Who does what</h2>
+    <p class="intro">The runbook in the repository, one row per role. File names follow one rule kept in the kit, <span class="code-inline">{project}_{asset}_v{version}</span>, and a file only gets a new version when one of its inputs changes.</p>
+    <table>
+      <thead><tr><th>Role</th><th>Receives</th><th>Hands back</th><th>After a refusal</th></tr></thead>
+      <tbody>
+        <tr><td>Producer</td><td data-k="Receives">The client brief</td><td data-k="Hands back">The approved script, one line per sentence. Approving it starts the workflow.</td><td data-k="After a refusal">Edit the line and approve again. Only that line is voiced again; no scene renders again.</td></tr>
+        <tr><td>Voice-over</td><td data-k="Receives">The approved script</td><td data-k="Hands back"><code>DEMO-001_vo_L07_v01.wav</code>, one file per line, with word timings for the captions</td><td data-k="After a refusal">Redo the one line: same name, next version.</td></tr>
+        <tr><td>Storyboard &amp; Camera Director</td><td data-k="Receives">Script and voice timings</td><td data-k="Hands back"><code>DEMO-001_storyboard_v01</code>: the shot plan with a 16:9 and a 9:16 camera for each scene, and a contact sheet</td><td data-k="After a refusal">Edit the shot plan. Scenes whose plan did not change keep their renders.</td></tr>
+        <tr><td>AI Image Artist</td><td data-k="Receives">Storyboard and kit</td><td data-k="Hands back"><code>DEMO-001_lookframes_v01.png</code>: two finished frames that fix materials, light and palette</td><td data-k="After a refusal">Change the kit and raise its version.</td></tr>
+        <tr><td>AI Video Animator</td><td data-k="Receives">Approved look</td><td data-k="Hands back">Scene renders, then <code>DEMO-001_master_v01.mp4</code> and its captions</td><td data-k="After a refusal">Only the scenes whose inputs changed render again.</td></tr>
+        <tr><td>Storyboard &amp; Camera Director, vertical review</td><td data-k="Receives">Approved master</td><td data-k="Hands back">Three Shorts at 1080x1920, cut from the vertical camera, not cropped from the master</td><td data-k="After a refusal">One decision per Short. A refused Short goes back with its fix; the package waits; only that Short is cut again.</td></tr>
+      </tbody>
+    </table>
+    <p class="repo"><a href="https://github.com/fred1433/one-script-video-flow/blob/main/docs/RUNBOOK.md">Read the full runbook</a></p>
+  </section>
+
+  <section class="ran" aria-labelledby="h-ran">
+    <div>
+      <h2 id="h-ran">What actually ran</h2>
+      <p class="intro">Everything on this page came out of one run on one machine, with no call to a paid model API.</p>
+      <dl id="ran">
+        <dt>Orchestration</dt><dd>n8n 2.46, self-hosted with docker compose, on a network with no route out. It calls a small render service over HTTP; no Execute Command node.</dd>
+        <dt>Voice</dt><dd>Kokoro-82M run locally, British voice bf_emma, picked from four British voices.</dd>
+        <dt>Image and motion</dt><dd>Blender 5.2, one model of the lock built from code and lit like a clay study, rendered from a 16:9 and a 9:16 camera. The motion is the mechanism itself, not a video generator.</dd>
+        <dt>Captions and labels</dt><dd>Drawn from the voice's word timings, in Manrope.</dd>
+        <dt>Sound</dt><dd>The click and the section sweep are synthesised in code, timed to the lock. No music.</dd>
+        <dt>Edit</dt><dd>ffmpeg, loudness set to -16 LUFS.</dd>
+        <dt>Paid tools</dt><dd>None connected. The runbook names the one function each would replace: the voice line, the look frames, the scene clip.</dd>
+      </dl>
+      <p class="repo"><a href="https://github.com/fred1433/one-script-video-flow">The repository</a> replays the run from the same script with one command.</p>
+    </div>
+    <figure class="proof" style="margin:0">
+      <img src="media/n8n_execution.png" alt="The n8n editor showing the finished execution of the workflow, from the script webhook to the package step" loading="lazy">
+      <p id="proofCap">The run in n8n.</p>
+    </figure>
+  </section>
+
+  <footer>
+    <p>Built by Frederic de Lavenne de Choulot, The AI Pipe. Independent demo, fictional device; no client material used.</p>
+    <p class="book"><a href="https://cal.theaipipe.com">Book 15 minutes</a></p>
+  </footer>
+</main>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const R = window.RUN;
+  const $ = (s, el = document) => el.querySelector(s);
+  const h = (tag, attrs = {}, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v; else if (k.startsWith("on")) el.addEventListener(k.slice(2), v); else el.setAttribute(k, v);
+    }
+    for (const k of kids.flat()) if (k != null) el.append(k.nodeType ? k : document.createTextNode(k));
+    return el;
+  };
+  const mmss = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+
+  // film
+  const master = $("#master");
+  master.src = R.master.src; master.poster = R.master.poster;
+  $("#filmMeta").append(
+    h("span", {}, h("b", {}, R.master.file)),
+    h("span", {}, `${R.master.duration} seconds, ${R.master.w}x${R.master.h}`),
+    h("span", {}, "Voice, captions and click from the run below")
+  );
+
+  // script
+  const script = $("#script");
+  const lineEls = [];
+  const sceneEls = {};
+  for (const s of R.scenes) {
+    const block = h("div", { class: "scene", id: "scene-" + s.id },
+      h("h3", {}, s.title, h("span", {}, mmss(s.start))));
+    for (const l of R.lines.filter(l => l.scene === s.id)) {
+      const b = h("button", { class: "line", type: "button", onclick: () => { master.currentTime = l.start + 0.01; master.play(); } }, l.text);
+      lineEls.push([l, b]); block.append(b);
+    }
+    if (s.short) block.append(h("p", { class: "source-tag" }, `Source of Short ${s.short}`));
+    sceneEls[s.id] = block; script.append(block);
+  }
+  master.addEventListener("timeupdate", () => {
+    const t = master.currentTime;
+    for (const [l, b] of lineEls) b.classList.toggle("on", t >= l.start - 0.05 && t <= l.end + 0.3);
+    for (const s of R.scenes) sceneEls[s.id].classList.toggle("on", t >= s.start && t < s.end);
+  });
+
+  // shorts
+  const shorts = $("#shorts");
+  const ev = R.events;
+  const refusal = ev.find(e => e.event === "changes" && e.stage === "shorts");
+  const finalOk = [...ev].reverse().find(e => e.event === "approved" && e.stage === "shorts");
+  for (const s of R.shorts) {
+    const last = s.versions[s.versions.length - 1];
+    const vid = h("video", { controls: "", playsinline: "", preload: "metadata", poster: last.poster, src: last.src });
+    const file = h("p", { class: "file" }, `${last.file}, ${last.duration} s`);
+    const card = h("article", { class: "short", id: "short-" + s.index }, vid, h("h3", {}, s.hook), file);
+    const row = h("div", { class: "row" },
+      h("button", { class: "btn", type: "button", onclick: () => seeSource(s) }, "See source scene"));
+    card.append(row);
+    const refusedHere = refusal && refusal.shorts && typeof refusal.shorts[String(s.index)] === "object";
+    if (s.versions.length > 1 && refusedHere) {
+      const r = refusal.shorts[String(s.index)];
+      const note = h("p", { class: "refusal" });
+      const sw = h("div", { class: "versions", role: "group", "aria-label": "Version" });
+      const show = (v) => {
+        vid.src = v.src; vid.poster = v.poster;
+        file.textContent = `${v.file}, ${v.duration} s`;
+        for (const b of sw.children) b.setAttribute("aria-pressed", b.dataset.v == v.v ? "true" : "false");
+        note.replaceChildren();
+        if (v.v === 1) note.append(h("b", {}, `v01 refused at ${refusal.time.hm}. `), `"${r.rejected}" Fix sent back: caption moved to the lower third.`);
+        else note.append(h("b", {}, `v02 approved at ${finalOk ? finalOk.time.hm : ""}. `), `It replaced v01, refused at ${refusal.time.hm} because "${r.rejected.toLowerCase()}".`);
+      };
+      for (const v of [...s.versions].reverse()) {
+        sw.append(h("button", { type: "button", "data-v": v.v, "aria-pressed": "false", onclick: () => show(v) },
+          v.v === last.v ? `v${String(v.v).padStart(2, "0")} approved` : `v${String(v.v).padStart(2, "0")} refused`));
+      }
+      row.append(sw); card.append(note); show(last);
+    }
+    shorts.append(card);
+  }
+  function seeSource(s) {
+    const scene = R.scenes.find(x => x.id === s.scene);
+    for (const el of Object.values(sceneEls)) el.classList.remove("source");
+    sceneEls[s.scene].classList.add("source");
+    master.currentTime = scene.start + 0.01;
+    master.scrollIntoView({ behavior: "smooth", block: "start" });
+    master.play().catch(() => {});
+  }
+
+  // hand-off stations: one per stage, gates show who answered
+  const stations = $("#stations");
+  const items = [];
+  const at = (stage, event) => ev.filter(e => e.stage === stage && e.event === event);
+  const first = (arr) => arr[0];
+  const add = (cls, t, title, lines, files) => items.push(h("li", { class: "st " + cls },
+    h("div", { class: "t" }, t), h("div", { class: "mark", "aria-hidden": "true" }), h("h4", {}, title), ...lines.map(x => h("p", x[1] ? { class: x[1] } : {}, x[0])),
+    ...(files || []).slice(0, 2).map(f => h("p", { class: "f" }, f.split("/").pop()))));
+  const sc = first(at("script", "approved"));
+  add("gate ok", sc.time.hm, "Script approved", [[`Planned: ${sc.role}`], [`Signed off by the ${sc.actor}`, "who"]], ["DEMO-001_script.md"]);
+  const vo = first(at("voice", "delivered"));
+  add("", vo.time.hm, "Voice-over", [["Local model, one file per line"]], [vo.files[0]]);
+  for (const [stage, label] of [["storyboard", "Storyboard"], ["look", "Look frames"], ["master", "Master edit"]]) {
+    const d = first(at(stage, "delivered"));
+    const a = first(at(stage, "approved"));
+    if (stage === "master") {
+      const an = first(at("animate", "delivered"));
+      add("", an.time.hm, "Scenes rendered", [[`${an.detail.rendered.length + an.detail.reused.length} scene renders in Blender`]], []);
+    }
+    add("gate ok", a.time.hm, `${label} signed off`, [[`Planned: ${a.role}`], [`Signed off by the ${a.actor}`, "who"]], d.files);
+  }
+  const sd = first(at("shorts", "delivered"));
+  if (refusal) {
+    const which = Object.entries(refusal.shorts).filter(([k, v]) => typeof v === "object").map(([k]) => "Short " + k).join(", ");
+    add("gate no", refusal.time.hm, `${which} refused`, [[`"${refusal.note}"`], [`Planned: ${refusal.role}`], [`Answered by the ${refusal.actor}`, "who"]], []);
+  }
+  if (finalOk) add("gate ok", finalOk.time.hm, "Shorts signed off", [[`Planned: ${finalOk.role}`], [`Signed off by the ${finalOk.actor}`, "who"]], []);
+  const pk = first(at("package", "delivered"));
+  add("", pk.time.hm, "Ready to upload", [["Title, chapters, captions, thumbnail and checksums"]], [pk.files[0]]);
+  stations.style.setProperty("--n", items.length);
+  stations.append(...items);
+  $("#proofCap").textContent = `The run in n8n, ${sc.time.day}. Times on this sheet are London time.`;
+})();
+</script>
+</body>
+</html>
