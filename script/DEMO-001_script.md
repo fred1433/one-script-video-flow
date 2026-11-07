@@ -21,7 +21,7 @@ L08: You hear it as one click.
 
 ## D. The section [short: S03 "Why pulling does nothing"]
 L09: Cut the housing in half, and you can see why it holds.
-L10: The spring keeps pushing the cartridge up, so the lug stays pressed against the stop.
+L10: The spring holds the lug up in the notch. The amber stop blocks the return turn.
 L11: Pull on it, and nothing moves. To release it, you push down, and turn back.
 
 ## E. Close

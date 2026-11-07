@@ -13,10 +13,16 @@ Needs: macOS or Linux, Python 3.12, Blender 5.2, ffmpeg, docker with compose. Th
 ```
 python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./flow.py up        # render service on 127.0.0.1:8790, n8n on 127.0.0.1:5678
-./flow.py run       # sends the approved script in and answers each gate in turn
+./flow.py run       # sends the approved script in and approves every gate in turn
 ```
 
-`./flow.py run` is the unattended rehearsal. In production each gate is answered by the person who owns it: `./flow.py status` shows what is waiting, `./flow.py approve <gate>` or `./flow.py reject <gate> --note "..."` answers it. The Shorts gate takes one decision per Short:
+`./flow.py run` on its own approves everything, the three Shorts included. The run shown on the demo page refused Short 2 once, with:
+
+```
+./flow.py run --reject-short 2 --note "The caption covers the lug" --fix caption_pos=lower
+```
+
+`./flow.py run` is the unattended rehearsal. In production each gate is answered by the person who owns it: `./flow.py status` shows what is waiting, `./flow.py approve <gate>` or `./flow.py reject <gate> --note "..."` answers it. The Shorts gate takes one verdict per Short waiting, and refuses an answer that leaves one out (`--approve 1` alone, with three waiting, is answered 400):
 
 ```
 ./flow.py review-shorts --approve 1,3 --reject 2 --note "The caption covers the lug" --fix caption_pos=lower

@@ -7,6 +7,7 @@ production ledger (out/<project>/ledger.jsonl) with the planned role and the rea
 import json
 import os
 import sys
+import re
 import threading
 import time
 import traceback
@@ -157,6 +158,17 @@ class H(BaseHTTPRequestHandler):
                 if p["gate"] == "shorts" and p["decision"] == "rejected":
                     return self._send(400, {"error": "refuse Shorts one by one, each with its fix: "
                                                      "./flow.py review-shorts --reject 2 --note ... --fix caption_pos=lower"})
+                if p["gate"] == "shorts":
+                    # every Short version on the table gets its own verdict; one "approved" never covers the others
+                    on_table = sorted({str(int(m.group(1))) for f in last["files"] for m in [re.search(r"_S(\d+)_vertical", f)] if m})
+                    verdicts = {str(int(k)): v for k, v in (p.get("shorts") or {}).items()}
+                    if sorted(verdicts) != on_table:
+                        return self._send(400, {"error": f"give a verdict for each Short waiting ({', '.join('S%02d' % int(k) for k in on_table)}), "
+                                                         f"for example ./flow.py review-shorts --approve {','.join(on_table)}",
+                                                "waiting": on_table, "given": sorted(verdicts)})
+                    if p["decision"] == "approved" and any(v != "approved" for v in verdicts.values()):
+                        return self._send(400, {"error": "a refused Short cannot be part of an approval"})
+                    p["shorts"] = verdicts
                 if p["gate"] == "shorts" and p["decision"] == "changes":
                     fixes_path = run.dir / "shorts_fixes.json"
                     known = json.loads(fixes_path.read_text()) if fixes_path.exists() else {}

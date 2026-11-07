@@ -38,7 +38,7 @@ pkg_event = delivered("package")[0]
 
 def london(ts):
     d = datetime.fromisoformat(ts).astimezone(LON)
-    return {"iso": d.isoformat(), "hm": d.strftime("%H:%M"), "day": d.strftime("%-d %b %Y")}
+    return {"iso": d.isoformat(), "hm": d.strftime("%H:%M"), "hms": d.strftime("%H:%M:%S"), "day": d.strftime("%-d %b %Y")}
 
 
 def copy(name):
@@ -47,7 +47,7 @@ def copy(name):
 
 
 def poster(video, t, out):
-    subprocess.run(["taskpolicy", "-b", "ffmpeg", "-threads", "2", "-y", "-loglevel", "error", "-ss", str(t), "-i", str(RUN / video), "-frames:v", "1",
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", str(t), "-i", str(RUN / video), "-frames:v", "1",
                     "-q:v", "3", str(MEDIA / out)], check=True)
     return f"media/{out}"
 
@@ -93,6 +93,8 @@ for s in sb["scenes"]:
         v = int(name.split("_v")[-1].split(".")[0])
         versions.append({"v": v, "file": name, "src": copy(name),
                          "poster": poster(name, 6.0 if idx != 2 else 9.4, f"poster_S{idx:02d}_v{v:02d}.jpg"), **probe(name)})
+        if len(names) > 1:  # the refused moment, same instant in each version
+            versions[-1]["still"] = poster(name, 12.5, f"still_S{idx:02d}_v{v:02d}_12s5.jpg")
     data["shorts"].append({"index": idx, "scene": s["id"], "hook": " ".join(plan[s["id"]]["hook"]),
                            "start": s["start"], "versions": versions})
 
@@ -104,5 +106,12 @@ for e in run_events:
                            "note": e.get("note"), "shorts": e.get("shorts"), "detail": e.get("detail"),
                            "time": london(e["ts"])})
 data["thumbnail"] = copy(pkg_event["files"][1])
+from PIL import Image as _I
+for key, stage in (("storyboardImg", "storyboard"), ("lookImg", "look")):
+    png = next(f for f in delivered(stage)[0]["files"] if f.endswith(".png"))
+    im = _I.open(RUN / png).convert("RGB")
+    im.thumbnail((2000, 2000))
+    im.save(MEDIA / png.replace(".png", ".jpg"), quality=86)
+    data[key] = "media/" + png.replace(".png", ".jpg")
 (SITE / "data.js").write_text("window.RUN = " + json.dumps(data, indent=1) + ";\n")
 print("site/data.js written;", len(data["events"]), "events;", sum(len(s["versions"]) for s in data["shorts"]) + 1, "videos")

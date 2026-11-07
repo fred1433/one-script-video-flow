@@ -43,7 +43,7 @@ A file keeps its version while its inputs are unchanged. Change one input (a scr
 ./flow.py down
 ```
 
-`./flow.py run` starts the script and answers every gate in order, for an unattended rehearsal.
+`./flow.py run` starts the script and approves every gate in order, for an unattended rehearsal; add `--reject-short 2 --note "The caption covers the lug" --fix caption_pos=lower` to replay the refusal shown on the demo page. At the Shorts gate every Short waiting needs its own verdict: an answer that names only some of them is refused with a 400.
 
 ## Where a paid tool would plug in
 
@@ -51,7 +51,7 @@ No paid connector ships switched off in this workflow: an integration that never
 
 - Voice: `_tts(text, voice)` returns audio and word timings. A voice API would replace it line for line, and the word timings would come from its timestamps.
 - Look frames: `step_look` renders two frames from the kit. An image model would take the storyboard frame as its reference here.
-- Animation: `step_animate` renders each scene in Blender. An image-to-video model would take a scene's look frame and its shot plan, and return a clip of the same length.
+- Animation: `step_animate` renders each scene in Blender. An image-to-video model would take a scene's look frame and its shot plan, and return a clip of the same length. One thing would then need solving: the compositor places the callouts and the click pulse by following the lug and the other anchors frame by frame, from positions Blender exports with each render, in the wide and in the vertical framing. A clip from an outside model comes with no such positions, so they would have to be tracked in the clip or the overlays placed by hand.
 
 ## What this demo used
 

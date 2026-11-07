@@ -6,6 +6,9 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === BASE) return Response.redirect(`${url.origin}${BASE}/`, 308);
+    if (/\/\/+/.test(url.pathname)) {
+      return Response.redirect(`${url.origin}${url.pathname.replace(/\/\/+/g, '/')}${url.search}`, 308);
+    }
     if (!url.pathname.startsWith(BASE + '/')) return new Response('Not found', { status: 404 });
     const path = url.pathname.slice(BASE.length) || '/';
     const res = await env.ASSETS.fetch(new Request(new URL(path, url.origin), { method: 'GET' }));

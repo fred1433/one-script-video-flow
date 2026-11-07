@@ -5,7 +5,9 @@
 2. "reject" on the Shorts gate is answered 400 and points to review-shorts;
 3. a Short refused, reworked and handed back within the same second can still be approved;
 4. a rework with no refusal in this execution is answered 400, not a crash or an old refusal;
-5. flow.pending() reads ledger order, not timestamps.
+5. flow.pending() reads ledger order, not timestamps;
+6. approving one Short never approves the others: every Short waiting needs its own verdict, and the
+   package step keeps every verdict of its execution, the refusal included.
 """
 import json, os, subprocess, sys, tempfile, threading, time, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -47,18 +49,28 @@ def main():
             except Exception:
                 time.sleep(0.2)
         P, X = "GATES-TEST", "exec-1"
-        hand = {"project": P, "gate": "shorts", "files": ["a.mp4"], "resume_url": f"http://127.0.0.1:{FAKE}/r", "execution": X}
+        three = ["DEMO_S01_vertical_v01.mp4", "DEMO_S02_vertical_v01.mp4", "DEMO_S03_vertical_v01.mp4"]
+        hand = {"project": P, "gate": "shorts", "files": three, "resume_url": f"http://127.0.0.1:{FAKE}/r", "execution": X}
         assert call("/handoff", hand)[0] == 200
         code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "changes",
-                                      "shorts": {"1": "approved", "2": {"rejected": "covers the lug", "fix": {}}}})
+                                      "shorts": {"1": "approved", "2": {"rejected": "covers the lug", "fix": {}}, "3": "approved"}})
         assert code == 400, (code, body); print("1. refusal without a fix:", code, body["error"][:70])
         code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "rejected", "note": "no"})
         assert code == 400, (code, body); print("2. reject on the Shorts gate:", code, body["error"][:70])
-        code, _ = call("/decide", {"project": P, "gate": "shorts", "decision": "changes",
-                                   "shorts": {"1": "approved", "2": {"rejected": "covers the lug", "fix": {"caption_pos": "lower"}}}})
-        assert code == 200
-        assert call("/handoff", hand)[0] == 200          # back within the same second
+        code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "approved", "shorts": {"1": "approved"}})
+        assert code == 400, (code, body); print("6a. approve S01 alone with three waiting:", code, body["error"][:70])
         code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "approved"})
+        assert code == 400, (code, body); print("6b. approve with no Short named:", code, body["error"][:70])
+        code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "changes",
+                                      "shorts": {"2": {"rejected": "covers the lug", "fix": {"caption_pos": "lower"}}}})
+        assert code == 400, (code, body); print("6c. refuse S02 without a verdict on S01 and S03:", code)
+        code, _ = call("/decide", {"project": P, "gate": "shorts", "decision": "changes",
+                                   "shorts": {"1": "approved", "2": {"rejected": "covers the lug", "fix": {"caption_pos": "lower"}}, "3": "approved"}})
+        assert code == 200
+        assert call("/handoff", dict(hand, files=["DEMO_S02_vertical_v02.mp4"]))[0] == 200   # back within the same second
+        code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "approved", "shorts": {"1": "approved", "2": "approved"}})
+        assert code == 400, (code, body); print("6d. S02 v02 alone waiting, verdict on S01 too:", code)
+        code, body = call("/decide", {"project": P, "gate": "shorts", "decision": "approved", "shorts": {"2": "approved"}})
         assert code == 200, (code, body); print("3. refused, handed back in the same second, approved:", code, len(got), "resumes sent")
         code, body = call("/step/shorts", {"project": "GATES-FRESH", "rework": True, "execution": "exec-9"})
         assert code == 400, (code, body); print("4. rework with no refusal in this execution:", code, body["error"][:70])
@@ -71,6 +83,11 @@ def main():
         flow.ledger = lambda: led
         assert flow.pending() is None
         print("5. pending() by ledger order: waiting, then answered")
+        verdicts = [e for e in led if e["event"] in ("approved", "changes") and e.get("execution") == X]
+        assert [e["event"] for e in verdicts] == ["changes", "approved"]
+        assert verdicts[0]["shorts"]["1"] == "approved" and verdicts[0]["shorts"]["3"] == "approved"
+        assert isinstance(verdicts[0]["shorts"]["2"], dict) and verdicts[1]["shorts"] == {"2": "approved"}
+        print("6e. ledger keeps S01 and S03 approved, S02 refused then S02 v02 approved, nothing else")
         print("all gate tests passed")
     finally:
         svc.terminate()

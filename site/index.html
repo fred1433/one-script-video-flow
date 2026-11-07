@@ -50,6 +50,32 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--blue); outline-
 .film video { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--studio); border-radius: 4px; }
 .film-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 14px 0 0; font-size: 14px; color: var(--ink-2); }
 .film-meta b { color: var(--ink); font-weight: 700; }
+.film-meta a { font-weight: 700; }
+.play { position: absolute; left: 50%; top: calc(var(--fh, 400px) / 2 - 42px); width: 84px; height: 84px; margin: 0 0 0 -42px; border-radius: 50%; border: 0; background: var(--ink); color: var(--white); cursor: pointer; display: grid; place-items: center; box-shadow: 0 0 0 6px rgba(244, 245, 244, .7); }
+.play svg { width: 34px; height: 34px; fill: currentColor; margin-left: 4px; }
+.play:hover { background: var(--blue); }
+.play[hidden] { display: none; }
+.revision { margin: 56px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px 40px; align-items: end; scroll-margin-top: 24px; }
+.revision .pair { display: flex; gap: 16px; align-items: flex-start; }
+.revision button { font: inherit; padding: 0; border: 0; background: none; cursor: pointer; text-align: left; color: var(--ink); display: flex; flex-direction: column; justify-content: flex-start; }
+.revision img { display: block; width: 200px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 10px; }
+.revision button.no img { outline: 3px solid var(--stop); outline-offset: 3px; }
+.revision button.ok img { outline: 3px solid var(--lug); outline-offset: 3px; }
+.revision .tag { display: block; margin: 12px 0 0; font-size: 14px; font-weight: 800; }
+.revision .tag span { display: block; font-weight: 500; color: var(--ink-2); }
+.revision figcaption { max-width: 46ch; font-size: 15px; color: var(--ink-2); }
+.revision figcaption h3 { font-size: 21px; line-height: 1.2; margin: 0 0 8px; color: var(--ink); font-weight: 800; letter-spacing: -0.01em; }
+.revision ol { list-style: none; margin: 14px 0 0; padding: 0; font-size: 14px; }
+.revision li { padding: 6px 0; border-top: 1px solid var(--rule); }
+.revision li b { color: var(--ink); font-variant-numeric: tabular-nums; margin-right: 8px; }
+@media (max-width: 760px) {
+  .revision { grid-template-columns: 1fr; }
+  .revision figcaption { order: -1; }
+  .play { width: 56px; height: 56px; margin-left: -28px; top: calc(var(--fh, 200px) / 2 - 28px); box-shadow: 0 0 0 4px rgba(244, 245, 244, .7); }
+  .play svg { width: 24px; height: 24px; margin-left: 3px; }
+  .revision .pair { gap: 12px; }
+  .revision img { width: calc((100vw - 32px - 12px) / 2); max-width: 200px; }
+}
 
 /* ---------- script, read under the film */
 .script { display: grid; grid-template-columns: 1fr 1.25fr 1.25fr 1.4fr .8fr; gap: 0 22px; margin: 34px 0 0; }
@@ -86,7 +112,7 @@ h2 { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -0.02em; line-height: 
 .intro { max-width: 64ch; color: var(--ink-2); margin: 0 0 30px; }
 .stations { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 0; position: relative; }
 .stations::before { content: ""; position: absolute; left: 0; right: 0; top: 47px; height: 2px; background: var(--ink); }
-.st { position: relative; padding: 0 12px 0 0; min-width: 0; overflow-wrap: anywhere; }
+.st { position: relative; padding: 0 12px 0 0; min-width: 0; }
 .st .t { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; height: 34px; }
 .st .mark { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); margin: 6px 0 14px; position: relative; z-index: 1; border: 3px solid var(--studio); box-sizing: content-box; }
 .st.gate .mark { background: var(--studio); border: 3px solid var(--ink); width: 14px; height: 14px; }
@@ -95,7 +121,13 @@ h2 { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -0.02em; line-height: 
 .st h4 { margin: 0 0 4px; font-size: 15.5px; font-weight: 800; line-height: 1.25; }
 .st p { margin: 0 0 3px; font-size: 13.5px; color: var(--ink-2); line-height: 1.4; }
 .st .who { color: var(--ink); }
-.st .f { font-size: 12.5px; color: var(--ink-3); word-break: break-all; }
+.st .f { font-size: 12.5px; color: var(--ink-3); overflow-wrap: normal; word-break: normal; }
+.st .f a { color: var(--ink-3); }
+.st .thumb { display: block; margin: 8px 0 0; width: 100%; max-width: 150px; border-radius: 4px; border: 1px solid var(--rule); }
+.st.trigger .mark { border-radius: 3px; background: var(--ink); }
+.short .src { display: none; margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--lug); background: var(--sheet); font-size: 14px; color: var(--ink); border-radius: 0 6px 6px 0; }
+.short .src.on { display: block; }
+.short .src b { font-weight: 800; }
 .st.no h4 { color: var(--stop-ink); }
 
 /* ---------- runbook */
@@ -155,11 +187,12 @@ footer .book { font-weight: 800; }
       <h1>How a cartridge lock holds</h1>
     </div>
     <div class="status" id="status"><i aria-hidden="true"></i><span>Ready to upload</span></div>
-    <p class="lede">One approved script went into an n8n workflow and came out as this explainer and three vertical Shorts. Each hand-off waited for a sign-off before the next person could start. The device is fictional, invented for this demo.</p>
+    <p class="lede">One approved script, a prepared shot plan and a 3D model went into an n8n workflow. This run produced a <span id="durWord">72</span>-second explainer and three vertical Shorts. A test refusal sent only Short 2 back. The device is fictional, invented for this demo.</p>
   </header>
 
   <div class="film">
     <video id="master" controls playsinline preload="metadata"></video>
+    <button class="play" id="play" type="button" aria-label="Play the explainer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg></button>
     <div class="film-meta" id="filmMeta"></div>
   </div>
 
@@ -167,9 +200,14 @@ footer .book { font-weight: 800; }
 
   <div class="shorts" id="shorts"></div>
 
+  <figure class="revision" id="revision" hidden>
+    <div class="pair" id="pair"></div>
+    <figcaption id="revCap"></figcaption>
+  </figure>
+
   <section class="track" aria-labelledby="h-track">
     <h2 id="h-track">Hand-offs, as they happened</h2>
-    <p class="intro">Each ring is a waiting point in the workflow: the job stops there until someone answers. The role is the one the step is planned for. In this run every gate was answered by the builder, and the sheet says so.</p>
+    <p class="intro">Each ring is a waiting point in the workflow: the job stops there until someone answers. The role is the one the step is planned for. In this run the builder answered every gate from a script, a few seconds after each hand-off, and the refusal of Short 2 was staged: its caption was planned at the centre of the frame on purpose, to show a refusal going round. In a studio, each gate waits for a person.</p>
     <ol class="stations" id="stations"></ol>
   </section>
 
@@ -180,8 +218,8 @@ footer .book { font-weight: 800; }
       <thead><tr><th>Role</th><th>Receives</th><th>Hands back</th><th>After a refusal</th></tr></thead>
       <tbody>
         <tr><td>Producer</td><td data-k="Receives">The client brief</td><td data-k="Hands back">The approved script, one line per sentence. Approving it starts the workflow.</td><td data-k="After a refusal">Edit the line and approve again. Only that line is voiced again; no scene renders again.</td></tr>
-        <tr><td>Voice-over</td><td data-k="Receives">The approved script</td><td data-k="Hands back"><code>DEMO-001_vo_L07_v01.wav</code>, one file per line, with word timings for the captions</td><td data-k="After a refusal">Redo the one line: same name, next version.</td></tr>
-        <tr><td>Storyboard &amp; Camera Director</td><td data-k="Receives">Script and voice timings</td><td data-k="Hands back"><code>DEMO-001_storyboard_v01</code>: the shot plan with a 16:9 and a 9:16 camera for each scene, and a contact sheet</td><td data-k="After a refusal">Edit the shot plan and start again. A new plan renders the scenes again.</td></tr>
+        <tr><td>Voice-over</td><td data-k="Receives">The approved script</td><td data-k="Hands back"><code>DEMO-001_vo_L07_v01.wav</code>, one file per line, with word timings for the captions</td><td data-k="After a refusal">No gate of its own: the lines are heard at the storyboard gate. To change one, edit the line and approve the script again; only that line is voiced again.</td></tr>
+        <tr><td>Storyboard &amp; Camera Director</td><td data-k="Receives">Script and voice timings</td><td data-k="Hands back"><code>DEMO-001_storyboard_v01.json</code>: the shot plan with a 16:9 and a 9:16 camera for each scene, and a contact sheet</td><td data-k="After a refusal">Edit the shot plan and start again. A new plan renders the scenes again.</td></tr>
         <tr><td>AI Image Artist</td><td data-k="Receives">Storyboard and kit</td><td data-k="Hands back"><code>DEMO-001_lookframes_v01.png</code>: two finished frames that fix materials, light and palette</td><td data-k="After a refusal">Change the kit and raise its version.</td></tr>
         <tr><td>AI Video Animator</td><td data-k="Receives">Approved look</td><td data-k="Hands back">Scene renders, then <code>DEMO-001_master_v01.mp4</code> and its captions</td><td data-k="After a refusal">Fix the plan or the kit and start again. A fix that only touches voice, captions or labels renders nothing again.</td></tr>
         <tr><td>Storyboard &amp; Camera Director, vertical review</td><td data-k="Receives">Approved master</td><td data-k="Hands back">Three Shorts at 1080x1920, cut from the vertical camera, not cropped from the master</td><td data-k="After a refusal">One decision per Short. A refused Short goes back with its fix; the package waits; only that Short is cut again.</td></tr>
@@ -193,17 +231,17 @@ footer .book { font-weight: 800; }
   <section class="ran" aria-labelledby="h-ran">
     <div>
       <h2 id="h-ran">What actually ran</h2>
-      <p class="intro">Everything on this page came out of one run on one machine, with no call to a paid model API.</p>
+      <p class="intro">Everything on this page came out of one machine, with no call to a paid model API. The Blender scenes were rendered once, in the first full run (about three hours). The run shown above started from an empty output folder: the voice lines, the storyboard sheet, the look frames and the scene renders came from the cache of earlier runs, and the master and the Shorts were cut again. Before it, line L10 of the script was rewritten and approved again; only that line was voiced again, and no scene went back to Blender.</p>
       <dl id="ran">
         <dt>Orchestration</dt><dd>n8n 2.46, self-hosted with docker compose, on a network with no route out. It calls a small render service over HTTP; no Execute Command node.</dd>
-        <dt>Voice</dt><dd>Kokoro-82M run locally, British voice bf_emma, picked from four British voices.</dd>
+        <dt>Voice</dt><dd>Kokoro-82M run locally, British voice bf_emma, kept from <a href="https://github.com/fred1433/one-script-video-flow/blob/main/docs/voice_audition.md">an audition of four British voices</a>.</dd>
         <dt>Image and motion</dt><dd>Blender 5.2, one model of the lock built from code and lit like a clay study, rendered from a 16:9 and a 9:16 camera. The motion is the mechanism itself, not a video generator.</dd>
         <dt>Captions and labels</dt><dd>Drawn from the voice's word timings, in Manrope.</dd>
-        <dt>Sound</dt><dd>The click and the section sweep are synthesised in code, timed to the lock. No music.</dd>
+        <dt>Sound</dt><dd>The click and the section sweep are synthesised in code. The click sounds at the lock and again, clear, in the pause after the word "click". No music.</dd>
         <dt>Edit</dt><dd>ffmpeg, loudness set to -16 LUFS.</dd>
         <dt>Paid tools</dt><dd>None connected. The runbook names the one function each would replace: the voice line, the look frames, the scene clip.</dd>
       </dl>
-      <p class="repo"><a href="https://github.com/fred1433/one-script-video-flow">The repository</a> replays the run from the same script: <span class="code-inline">./flow.py up</span>, then <span class="code-inline">./flow.py run</span>.</p>
+      <p class="repo"><a href="https://github.com/fred1433/one-script-video-flow">The repository</a> replays the run from the same script: <span class="code-inline">./flow.py up</span>, then <span class="code-inline">./flow.py run --reject-short 2 --note "The caption covers the lug" --fix caption_pos=lower</span>. Without <span class="code-inline">--reject-short</span> it approves every gate.</p>
     </div>
     <figure class="proof" style="margin:0">
       <img src="media/n8n_execution.png" alt="The n8n editor showing the finished execution of the workflow, from the script webhook to the package step">
@@ -238,8 +276,15 @@ footer .book { font-weight: 800; }
   $("#filmMeta").append(
     h("span", {}, h("b", {}, R.master.file)),
     h("span", {}, `${R.master.duration} seconds, ${R.master.w}x${R.master.h}`),
-    h("span", {}, "Voice, captions and click from the run below")
+    h("span", {}, "Voice, captions and click from the run below"),
+    h("a", { href: "#revision", id: "toRevision", onclick: (e) => { e.preventDefault(); openRevision(); } }, "See the Short 2 revision")
   );
+  $("#durWord").textContent = String(Math.round(R.master.duration));
+  const play = $("#play");
+  const placePlay = () => play.style.setProperty("--fh", master.clientHeight + "px");
+  placePlay(); window.addEventListener("resize", placePlay); master.addEventListener("loadedmetadata", placePlay);
+  play.addEventListener("click", () => { master.play().catch(() => {}); });
+  master.addEventListener("play", () => { play.hidden = true; });
 
   // script
   const script = $("#script");
@@ -255,6 +300,11 @@ footer .book { font-weight: 800; }
     if (s.short) block.append(h("p", { class: "source-tag" }, `Source of Short ${s.short}`));
     sceneEls[s.id] = block; script.append(block);
   }
+  // one video plays at a time
+  document.addEventListener("play", (e) => {
+    for (const v of document.querySelectorAll("video")) if (v !== e.target) v.pause();
+  }, true);
+  const wbr = (name) => { const sp = h("span"); name.split("_").forEach((part, i, a) => { sp.append(part + (i < a.length - 1 ? "_" : "")); if (i < a.length - 1) sp.append(document.createElement("wbr")); }); return sp; };
   master.addEventListener("timeupdate", () => {
     const t = master.currentTime;
     for (const [l, b] of lineEls) b.classList.toggle("on", t >= l.start - 0.05 && t <= l.end + 0.3);
@@ -271,32 +321,76 @@ footer .book { font-weight: 800; }
     const vid = h("video", { controls: "", playsinline: "", preload: "metadata", poster: last.poster, src: last.src });
     const file = h("p", { class: "file" }, `${last.file}, ${last.duration} s`);
     const card = h("article", { class: "short", id: "short-" + s.index }, vid, h("h3", {}, s.hook), file);
+    const src = h("p", { class: "src", "aria-live": "polite" });
     const row = h("div", { class: "row" },
-      h("button", { class: "btn", type: "button", onclick: () => seeSource(s) }, "See source scene"));
-    card.append(row);
+      h("button", { class: "btn", type: "button", onclick: () => { vid.pause(); seeSource(s, src); } }, "See source scene"));
+    card.append(row, src);
     const refusedHere = refusal && refusal.shorts && typeof refusal.shorts[String(s.index)] === "object";
     if (s.versions.length > 1 && refusedHere) {
       const r = refusal.shorts[String(s.index)];
       const note = h("p", { class: "refusal" });
       const sw = h("div", { class: "versions", role: "group", "aria-label": "Version" });
-      const show = (v) => {
+      const show = (v, keep) => {
+        const t = vid.currentTime || 0;
         vid.src = v.src; vid.poster = v.poster;
+        if (keep) vid.addEventListener("loadedmetadata", () => { vid.currentTime = typeof keep === "number" ? keep : (t > 0.5 ? t : (v.v === 1 ? 12.5 : 0)); }, { once: true });
         file.textContent = `${v.file}, ${v.duration} s`;
         for (const b of sw.children) b.setAttribute("aria-pressed", b.dataset.v == v.v ? "true" : "false");
         note.replaceChildren();
-        if (v.v === 1) note.append(h("b", {}, `v01 refused at ${refusal.time.hm}. `), `"${r.rejected}" Fix sent back: caption moved to the lower third.`);
+        if (v.v === 1) note.append(h("b", {}, `v01 refused at ${refusal.time.hm}. `), `"${r.rejected}." Fix sent back: caption moved to the lower third. At 0:12.5 the caption sits on the lug.`);
         else note.append(h("b", {}, `v02 approved at ${finalOk ? finalOk.time.hm : ""}. `), `It replaced v01, refused at ${refusal.time.hm} because "${r.rejected.toLowerCase()}".`);
       };
       for (const v of [...s.versions].reverse()) {
-        sw.append(h("button", { type: "button", "data-v": v.v, "aria-pressed": "false", onclick: () => show(v) },
+        sw.append(h("button", { type: "button", "data-v": v.v, "aria-pressed": "false", onclick: () => show(v, true) },
           v.v === last.v ? `v${String(v.v).padStart(2, "0")} approved` : `v${String(v.v).padStart(2, "0")} refused`));
       }
       row.append(sw); card.append(note); show(last);
+      revision(s, r, show, card, vid);
     }
     shorts.append(card);
   }
-  function seeSource(s) {
+  function revision(s, r, show, card, vid) {
+    const fig = $("#revision"), pair = $("#pair");
+    const v1 = s.versions[0], v2 = s.versions[s.versions.length - 1];
+    const reworked = ev.find(e => e.event === "delivered" && e.stage === "shorts" && e.files.length === 1 && e.files[0] === v2.file);
+    const pkg = ev.find(e => e.event === "delivered" && e.stage === "package");
+    if (!v1.still || !v2.still) return;
+    const pick = (v) => { show(v, 12.5); vid.pause(); card.scrollIntoView({ behavior: "smooth", block: "center" }); };
+    pair.append(
+      h("button", { type: "button", class: "no", onclick: () => pick(v1) }, h("img", { src: v1.still, alt: "Short 2, version 1, at 12.5 seconds: the caption sits on the lug", width: 200, height: 356 }),
+        h("span", { class: "tag" }, "v01 at 0:12.5", h("span", {}, "The caption covers the lug"))),
+      h("button", { type: "button", class: "ok", onclick: () => pick(v2) }, h("img", { src: v2.still, alt: "Short 2, version 2, at 12.5 seconds: the lug and the amber stop are clear", width: 200, height: 356 }),
+        h("span", { class: "tag" }, "v02 at 0:12.5", h("span", {}, "Caption in the lower third, lug and stop clear"))));
+    const okSame = Object.entries(refusal.shorts).filter(([, v]) => v === "approved").map(([k]) => k);
+    const rows = [[refusal.time.hms, `Short ${s.index} refused: "${r.rejected}."` + (okSame.length ? ` ${okSame.length > 1 ? "Shorts" : "Short"} ${okSame.join(" and ")} approved in the same answer.` : "")]];
+    if (reworked) rows.push([reworked.time.hms, `${v2.file} cut again, nothing else re-made.`]);
+    if (finalOk) rows.push([finalOk.time.hms, "v02 approved."]);
+    if (pkg) rows.push([pkg.time.hms, "Package ready to upload."]);
+    $("#revCap").append(h("h3", {}, "Short 2, before and after the refusal"),
+      "The same instant in both versions. Click one to load it in the Short above, paused there. London time, from the run's ledger:",
+      h("ol", {}, rows.map(([t, txt]) => h("li", {}, h("b", {}, t), txt))));
+    fig.hidden = false;
+  }
+  function openRevision() {
+    for (const v of document.querySelectorAll("video")) v.pause();
+    const s2 = R.shorts.find(x => x.versions.length > 1);
+    const card = s2 && $("#short-" + s2.index);
+    if (card) {
+      const vid = card.querySelector("video");
+      vid.pause();
+      const go = () => { try { vid.currentTime = 12.5; } catch (e) {} };
+      if (vid.readyState >= 1) go(); else vid.addEventListener("loadedmetadata", go, { once: true });
+    }
+    $("#revision").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function seeSource(s, srcEl) {
     const scene = R.scenes.find(x => x.id === s.scene);
+    for (const el of document.querySelectorAll(".short .src")) el.classList.remove("on");
+    if (srcEl) {
+      const lines = R.lines.filter(l => l.scene === s.scene);
+      srcEl.replaceChildren(h("b", {}, `Master at ${mmss(scene.start)}, from the approved script: `), lines.map(l => l.text).join(" "));
+      srcEl.classList.add("on");
+    }
     for (const el of Object.values(sceneEls)) el.classList.remove("source");
     sceneEls[s.scene].classList.add("source");
     master.currentTime = scene.start + 0.01;
@@ -309,28 +403,35 @@ footer .book { font-weight: 800; }
   const items = [];
   const at = (stage, event) => ev.filter(e => e.stage === stage && e.event === event);
   const first = (arr) => arr[0];
-  const add = (cls, t, title, lines, files) => items.push(h("li", { class: "st " + cls },
+  const add = (cls, t, title, lines, files, extra) => items.push(h("li", { class: "st " + cls },
     h("div", { class: "t" }, t), h("div", { class: "mark", "aria-hidden": "true" }), h("h4", {}, title), ...lines.map(x => h("p", x[1] ? { class: x[1] } : {}, x[0])),
-    ...(files || []).slice(0, 2).map(f => h("p", { class: "f" }, f.split("/").pop()))));
+    ...(files || []).slice(0, 3).map(f => h("p", { class: "f" }, wbr(f.split("/").pop()))), ...(extra || [])));
   const sc = first(at("script", "approved"));
-  add("gate ok", sc.time.hm, "Script approved", [[`Planned: ${sc.role}`], [`Signed off by the ${sc.actor}`, "who"]], ["DEMO-001_script.md"]);
+  add("trigger", sc.time.hm, "Script approved", [["Starts the workflow"], [`Planned: ${sc.role}`], [`Approved by the ${sc.actor}`, "who"]], ["DEMO-001_script.md"]);
   const vo = first(at("voice", "delivered"));
-  add("", vo.time.hm, "Voice-over", [["Local model, one file per line"]], [vo.files[0]]);
+  const voNew = vo.files.filter(f => !/_v01\.wav$/.test(f));
+  const voLines = [["Local model, one file per line"]];
+  if (voNew.length) voLines.push([`${voNew.map(f => f.match(/_(L\d+)_/)[1]).join(", ")} rewritten in the script, now ${voNew.map(f => f.match(/_(v\d+)\./)[1]).join(", ")}; the other ${vo.files.length - voNew.length} lines unchanged`]);
+  add("", vo.time.hm, "Voice-over", voLines, voNew.length ? voNew : [vo.files[0]]);
   for (const [stage, label] of [["storyboard", "Storyboard"], ["look", "Look frames"], ["master", "Master edit"]]) {
     const d = first(at(stage, "delivered"));
     const a = first(at(stage, "approved"));
     if (stage === "master") {
       const an = first(at("animate", "delivered"));
-      add("", an.time.hm, "Scenes rendered", [[`${an.detail.rendered.length + an.detail.reused.length} scene renders in Blender`]], []);
+      const n = an.detail.rendered.length + an.detail.reused.length;
+      add("", an.time.hm, an.detail.rendered.length ? "Scenes rendered" : "Scene renders reused", [[an.detail.rendered.length
+        ? `${n} scene renders in Blender` : `${n} Blender scene renders from the first full run (about three hours), reused from the cache`]], []);
     }
-    add("gate ok", a.time.hm, `${label} signed off`, [[`Planned: ${a.role}`], [`Signed off by the ${a.actor}`, "who"]], d.files);
+    const img = { storyboard: R.storyboardImg, look: R.lookImg }[stage];
+    const thumb = img ? [h("a", { href: img, target: "_blank", rel: "noopener", "aria-label": `Open the ${label.toLowerCase()} sheet` }, h("img", { class: "thumb", src: img, alt: `${label} sheet from this run` }))] : [];
+    add("gate ok", a.time.hm, `${label} signed off`, [[`Planned: ${a.role}`], [`Signed off by the ${a.actor}`, "who"]], d.files.filter(f => !/\.png$/.test(f) || !img), thumb);
   }
   const sd = first(at("shorts", "delivered"));
   if (refusal) {
     const which = Object.entries(refusal.shorts).filter(([k, v]) => typeof v === "object").map(([k]) => "Short " + k).join(", ");
-    add("gate no", refusal.time.hm, `${which} refused`, [[`"${refusal.note}"`], [`Planned: ${refusal.role}`], [`Answered by the ${refusal.actor}`, "who"]], []);
+    add("gate no", refusal.time.hm, `${which} refused`, [[`"${refusal.note}."`], [`Planned: ${refusal.role}`], [`Answered by the ${refusal.actor}`, "who"]], sd ? sd.files.filter(f => /S02/.test(f)) : []);
   }
-  if (finalOk) add("gate ok", finalOk.time.hm, "Shorts signed off", [[`Planned: ${finalOk.role}`], [`Signed off by the ${finalOk.actor}`, "who"]], []);
+  if (finalOk) add("gate ok", finalOk.time.hm, "Shorts signed off", [[`Planned: ${finalOk.role}`], [`Signed off by the ${finalOk.actor}`, "who"]], R.shorts.map(x => x.versions[x.versions.length - 1].file));
   const pk = first(at("package", "delivered"));
   add("", pk.time.hm, "Ready to upload", [["Title, chapters, captions, thumbnail and checksums"]], [pk.files[0]]);
   stations.style.setProperty("--n", items.length);

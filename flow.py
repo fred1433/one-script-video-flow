@@ -4,7 +4,7 @@
   ./flow.py up [--offline]          start the render service (host) and n8n (docker)
   ./flow.py start                   send the approved script into the workflow
   ./flow.py status                  print the production ledger
-  ./flow.py approve <gate> [--note] approve the file waiting at a gate
+  ./flow.py approve <gate> [--note] approve the file waiting at a gate (the Shorts gate needs review-shorts)
   ./flow.py reject <gate> --note    send it back
   ./flow.py review-shorts --approve 1,3 --reject 2 --note "..." --fix caption_pos=lower
   ./flow.py run [--reject-short 2 --note ... --fix ...]   start, then answer every gate in order
@@ -12,6 +12,7 @@
 """
 import argparse
 import json
+import re
 import os
 import subprocess
 import sys
@@ -31,7 +32,7 @@ def compose_cmd():
     return ["docker", "compose"] if ok else ["docker-compose"]
 
 
-def call(method, url, body=None, timeout=30):
+def call(method, url, body=None, timeout=120):
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method=method, headers={"Content-Type": "application/json"})
     try:
@@ -108,6 +109,12 @@ def pending():
     return None
 
 
+def shorts_waiting():
+    """Indices of the Short versions waiting at the review gate, read from the last hand-off."""
+    last = [e for e in ledger() if e["event"] == "awaiting" and e.get("gate") == "shorts"][-1]
+    return sorted({int(m.group(1)) for f in last["files"] for m in [re.search(r"_S(\d+)_vertical", f)] if m})
+
+
 def decide(gate, decision, note=None, shorts=None):
     return call("POST", f"{RENDER}/decide", {"project": PROJECT, "gate": gate, "decision": decision, "note": note,
                                               "shorts": shorts, "by": "builder (for this demo)"})
@@ -120,12 +127,19 @@ def start(script, quality):
         req = urllib.request.Request(f"{N8N}/webhook/one-script-flow", data=json.dumps(body).encode(), method="POST",
                                      headers={"Content-Type": "application/json"})
         try:
-            with urllib.request.urlopen(req, timeout=30) as r:
-                return json.loads(r.read() or b"{}")
+            n0 = len(ledger())
+            with urllib.request.urlopen(req, timeout=60) as r:
+                raw = r.read()
+            for _ in range(30):  # the run counts as started once the script approval is in the ledger
+                if any(e["event"] == "approved" and e.get("stage") == "script" for e in ledger()[n0:]):
+                    return json.loads(raw) if raw.strip().startswith(b"{") else {"started": True}
+                time.sleep(2)
         except urllib.error.HTTPError as e:
             if e.code != 404:
                 raise
             time.sleep(2)
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
+            time.sleep(3)
     sys.exit("the workflow webhook never registered")
 
 
@@ -170,7 +184,11 @@ def main():
         rejected_once = False
         t_end = time.time() + a.timeout
         while time.time() < t_end:
-            led = ledger()[n0:]
+            try:
+                led = ledger()[n0:]
+            except (urllib.error.URLError, TimeoutError, ConnectionError):
+                time.sleep(3)  # the service is busy cutting; ask again
+                continue
             if any(e["event"] == "delivered" and e.get("stage") == "package" for e in led):
                 print("package ready")
                 status()
@@ -178,12 +196,15 @@ def main():
             g = pending() if led else None
             if g in GATES:
                 if g == "shorts" and a.reject_short and not rejected_once:
-                    others = ",".join(str(i) for i in (1, 2, 3) if i != a.reject_short)
-                    shorts = {i: "approved" for i in others.split(",")}
+                    shorts = {str(i): "approved" for i in shorts_waiting() if i != a.reject_short}
                     shorts[str(a.reject_short)] = {"rejected": a.note, "fix": parse_fix(a.fix)}
                     print(f"review shorts: S{a.reject_short:02d} sent back ({a.note})")
                     decide("shorts", "changes", a.note, shorts)
                     rejected_once = True
+                elif g == "shorts":
+                    idx = shorts_waiting()
+                    print("approve shorts " + ",".join(f"S{i:02d}" for i in idx))
+                    decide("shorts", "approved", "looks right", {str(i): "approved" for i in idx})
                 else:
                     print(f"approve {g}")
                     decide(g, "approved", "looks right")

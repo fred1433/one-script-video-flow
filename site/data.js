@@ -8,7 +8,7 @@ window.RUN = {
   "duration": 72.0,
   "w": 1920,
   "h": 1080,
-  "mb": 11.4
+  "mb": 11.5
  },
  "scenes": [
   {
@@ -113,9 +113,9 @@ window.RUN = {
   },
   {
    "id": "L10",
-   "text": "The spring keeps pushing the cartridge up, so the lug stays pressed against the stop.",
+   "text": "The spring holds the lug up in the notch. The amber stop blocks the return turn.",
    "start": 50.2,
-   "end": 55.575,
+   "end": 55.675,
    "scene": "D"
   },
   {
@@ -166,7 +166,8 @@ window.RUN = {
      "duration": 18.0,
      "w": 1080,
      "h": 1920,
-     "mb": 3.0
+     "mb": 3.1,
+     "still": "media/still_S02_v01_12s5.jpg"
     },
     {
      "v": 2,
@@ -176,7 +177,8 @@ window.RUN = {
      "duration": 18.0,
      "w": 1080,
      "h": 1920,
-     "mb": 3.1
+     "mb": 3.1,
+     "still": "media/still_S02_v02_12s5.jpg"
     }
    ]
   },
@@ -194,7 +196,7 @@ window.RUN = {
      "duration": 21.0,
      "w": 1080,
      "h": 1920,
-     "mb": 2.7
+     "mb": 2.6
     }
    ]
   }
@@ -212,12 +214,13 @@ window.RUN = {
    "note": null,
    "shorts": null,
    "detail": {
-    "script_sha1": "06628d5d0f2e",
+    "script_sha1": "21f10b4b5146",
     "lines": 12
    },
    "time": {
-    "iso": "2026-11-07T14:28:23+00:00",
-    "hm": "14:28",
+    "iso": "2026-11-07T18:49:28+00:00",
+    "hm": "18:49",
+    "hms": "18:49:28",
     "day": "7 Nov 2026"
    }
   },
@@ -245,13 +248,14 @@ window.RUN = {
    "shorts": null,
    "detail": {
     "changed_lines": [],
-    "script_sha1": "06628d5d0f2e",
+    "script_sha1": "21f10b4b5146",
     "voice": "kokoro bf_emma",
-    "seconds": 10.7
+    "seconds": 0.0
    },
    "time": {
-    "iso": "2026-11-07T14:28:34+00:00",
-    "hm": "14:28",
+    "iso": "2026-11-07T18:49:28+00:00",
+    "hm": "18:49",
+    "hms": "18:49:28",
     "day": "7 Nov 2026"
    }
   },
@@ -271,11 +275,12 @@ window.RUN = {
     "version": 1,
     "warnings": [],
     "duration": 72.0,
-    "seconds": 24.5
+    "seconds": 0.3
    },
    "time": {
-    "iso": "2026-11-07T14:28:58+00:00",
-    "hm": "14:28",
+    "iso": "2026-11-07T18:49:28+00:00",
+    "hm": "18:49",
+    "hms": "18:49:28",
     "day": "7 Nov 2026"
    }
   },
@@ -293,8 +298,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T14:28:59+00:00",
-    "hm": "14:28",
+    "iso": "2026-11-07T18:49:28+00:00",
+    "hm": "18:49",
+    "hms": "18:49:28",
     "day": "7 Nov 2026"
    }
   },
@@ -312,8 +318,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T14:28:59+00:00",
-    "hm": "14:28",
+    "iso": "2026-11-07T18:49:30+00:00",
+    "hm": "18:49",
+    "hms": "18:49:30",
     "day": "7 Nov 2026"
    }
   },
@@ -330,11 +337,12 @@ window.RUN = {
    "shorts": null,
    "detail": {
     "version": 1,
-    "seconds": 13.1
+    "seconds": 0.3
    },
    "time": {
-    "iso": "2026-11-07T14:29:12+00:00",
-    "hm": "14:29",
+    "iso": "2026-11-07T18:49:30+00:00",
+    "hm": "18:49",
+    "hms": "18:49:30",
     "day": "7 Nov 2026"
    }
   },
@@ -351,8 +359,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T14:29:12+00:00",
-    "hm": "14:29",
+    "iso": "2026-11-07T18:49:30+00:00",
+    "hm": "18:49",
+    "hms": "18:49:30",
     "day": "7 Nov 2026"
    }
   },
@@ -369,8 +378,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T14:29:14+00:00",
-    "hm": "14:29",
+    "iso": "2026-11-07T18:49:33+00:00",
+    "hm": "18:49",
+    "hms": "18:49:33",
     "day": "7 Nov 2026"
    }
   },
@@ -384,7 +394,8 @@ window.RUN = {
    "note": null,
    "shorts": null,
    "detail": {
-    "rendered": [
+    "rendered": [],
+    "reused": [
      "A-wide",
      "B-wide",
      "B-tall",
@@ -394,13 +405,13 @@ window.RUN = {
      "D-tall",
      "E-wide"
     ],
-    "reused": [],
     "quality": "final",
-    "seconds": 10893.7
+    "seconds": 0.0
    },
    "time": {
-    "iso": "2026-11-07T17:30:48+00:00",
-    "hm": "17:30",
+    "iso": "2026-11-07T18:49:33+00:00",
+    "hm": "18:49",
+    "hms": "18:49:33",
     "day": "7 Nov 2026"
    }
   },
@@ -418,11 +429,12 @@ window.RUN = {
    "detail": {
     "version": 1,
     "rebuilt": true,
-    "seconds": 30.2
+    "seconds": 25.9
    },
    "time": {
-    "iso": "2026-11-07T17:31:18+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:49:59+00:00",
+    "hm": "18:49",
+    "hms": "18:49:59",
     "day": "7 Nov 2026"
    }
   },
@@ -439,8 +451,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T17:31:18+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:49:59+00:00",
+    "hm": "18:49",
+    "hms": "18:49:59",
     "day": "7 Nov 2026"
    }
   },
@@ -457,8 +470,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T17:31:20+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:00+00:00",
+    "hm": "18:50",
+    "hms": "18:50:00",
     "day": "7 Nov 2026"
    }
   },
@@ -496,11 +510,12 @@ window.RUN = {
       "rebuilt": true
      }
     ],
-    "seconds": 22.2
+    "seconds": 22.3
    },
    "time": {
-    "iso": "2026-11-07T17:31:43+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:22+00:00",
+    "hm": "18:50",
+    "hms": "18:50:22",
     "day": "7 Nov 2026"
    }
   },
@@ -519,8 +534,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T17:31:43+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:22+00:00",
+    "hm": "18:50",
+    "hms": "18:50:22",
     "day": "7 Nov 2026"
    }
   },
@@ -548,8 +564,9 @@ window.RUN = {
    },
    "detail": null,
    "time": {
-    "iso": "2026-11-07T17:31:45+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:24+00:00",
+    "hm": "18:50",
+    "hms": "18:50:24",
     "day": "7 Nov 2026"
    }
   },
@@ -573,11 +590,12 @@ window.RUN = {
       "rebuilt": true
      }
     ],
-    "seconds": 6.9
+    "seconds": 6.8
    },
    "time": {
-    "iso": "2026-11-07T17:31:52+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:31+00:00",
+    "hm": "18:50",
+    "hms": "18:50:31",
     "day": "7 Nov 2026"
    }
   },
@@ -594,8 +612,9 @@ window.RUN = {
    "shorts": null,
    "detail": null,
    "time": {
-    "iso": "2026-11-07T17:31:52+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:31+00:00",
+    "hm": "18:50",
+    "hms": "18:50:31",
     "day": "7 Nov 2026"
    }
   },
@@ -609,11 +628,14 @@ window.RUN = {
     "DEMO-001_S02_vertical_v02.mp4"
    ],
    "note": "looks right",
-   "shorts": null,
+   "shorts": {
+    "2": "approved"
+   },
    "detail": null,
    "time": {
-    "iso": "2026-11-07T17:31:54+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:33+00:00",
+    "hm": "18:50",
+    "hms": "18:50:33",
     "day": "7 Nov 2026"
    }
   },
@@ -634,11 +656,14 @@ window.RUN = {
     "seconds": 0.0
    },
    "time": {
-    "iso": "2026-11-07T17:31:54+00:00",
-    "hm": "17:31",
+    "iso": "2026-11-07T18:50:33+00:00",
+    "hm": "18:50",
+    "hms": "18:50:33",
     "day": "7 Nov 2026"
    }
   }
  ],
- "thumbnail": "media/DEMO-001_thumbnail_v01.jpg"
+ "thumbnail": "media/DEMO-001_thumbnail_v01.jpg",
+ "storyboardImg": "media/DEMO-001_storyboard_v01.jpg",
+ "lookImg": "media/DEMO-001_lookframes_v01.jpg"
 };
